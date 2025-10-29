@@ -1,14 +1,33 @@
-# AutoDocMind - v.0.0.1
+# 🤖 AutoDocMind - v.0.0.1
 
 ## 🧾 Descripcion del proyecto
 
-...
+**AutoDocMind** es una herramienta que analiza automaticamente repositorios de codigo para generar documentacion clara y util.
+
+Su objetivo es ahorrar tiempo a los desarrolladores creando de forma automatica archivos como el README, diagramas de flujo y explicaciones de cada modulo, sin depender de la redaccion manual.
+
+Combina analisis estatico del codigo con procesamiento de lenguaje natural para ofrecer una vision comprensible del proyecto, sus dependencias y su estructura interna.
 
 ## 📑 Contexto
 
-...
+La documentacion tecnica suele quedarse atras frente al ritmo de desarrollo, generando tres problemas comunes: **curvas de entrada altas**, **conocimiento disperso** y **mantenimiento costoso**. Actualizar manualmente READMEs, diagramas y docstrings no escala y termina desincronizado del codigo.
 
-## 🚀 Funcionalidades clave
+**AutoDocMind** nace para automatizar ese *trabajo invisible*: analiza un repositorio y genera **documentacion explicativa** directamente desde el codigo, describiendo flujos, dependencias, responsabilidades y posibles mejoras.
+
+### ¿Para quien es util?
+
+- **Equipos** que necesitan onboardings rapidos y documentacion viva.  
+- **Freelancers o consultoras** que entregan proyectos con README profesionales.  
+- **Mantenedores o revisores** que buscan detectar acoplamientos o puntos fragiles.  
+- **Portafolios tecnicos** que quieren reflejar arquitectura y decisiones de diseño.
+
+### Ejemplos de uso
+
+- Heredar un proyecto sin documentacion y obtener una **radiografia tecnica inicial**.  
+- Preparar una **release** y validar documentacion y dependencias.  
+- Realizar **revisiones tecnicas** automatizadas para identificar funciones “magicas” o modulos poco cohesionados.
+
+## 🛠️ Funcionalidades clave
 
 ...
 
@@ -84,7 +103,7 @@ AutoDocMind/
 └── requirements.txt
 ```
 
-## 🎯 Consideraciones adicionales
+## 🎯 Consideraciones adicionales para desarrolladores
 
 ### Forward References (PEP 484)
 
