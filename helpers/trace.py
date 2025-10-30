@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['error_trace']
+
 def error_trace(tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Exception) -> None:
     """
     It records an error in the logger with filtered trace information.

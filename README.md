@@ -1,4 +1,4 @@
-# 🤖 AutoDocMind - v.0.0.1
+# 🤖 AutoDocMind - v.0.1.1
 
 ## 🧾 Project description
 
@@ -96,6 +96,12 @@ AutoDocMind/
 ├── settings
 │   ├── algorithm.py
 │   └── constants.py
+├── src
+│   ├── analyzers
+│   │   └── python.py
+│   ├── generators
+│   │   └── readme.py
+│   └── execute.py
 ├── .gitignore
 ├── LICENSE
 ├── main.py

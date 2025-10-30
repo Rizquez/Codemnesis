@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['Settings']
+
 OUTPUT_FOLDER = 'AutoDocMind-Output'
 
 INCLUDED: Set[str] = {'.py'}

@@ -1,6 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from typing import Set
+# Get listed here!
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -16,7 +16,7 @@ ALGORITHM = 'ALGORITHM'
 Handler for the `.log` file for storing the execution trace.
 """
 
-ALGORITHM_VERSION = '0.1.0'
+ALGORITHM_VERSION = '0.1.1'
 """
 Current version of the algorithm.
 """

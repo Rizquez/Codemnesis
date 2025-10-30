@@ -13,6 +13,8 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['ReadmeHanler']
+
 README_FILE = 'AutoDocMind.md'
 
 class ReadmeHanler:

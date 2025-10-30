@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['Console']
+
 class Console:
     """
     Class responsible for managing and validating arguments received by the console.

@@ -7,8 +7,8 @@ import logging
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from src.execute import execute
 from handlers.console import Console
-from src.setup import manage_implement
 from settings.algorithm import Settings
 from helpers.loggers import ManageLogger
 from settings.constants import ALGORITHM, ALGORITHM_VERSION
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     logger.info("Execution summary")
     logger.info(f"Algorithm version: {ALGORITHM_VERSION}")
 
-    manage_implement(settings)
+    execute(settings)
 
     end = time.time()
 

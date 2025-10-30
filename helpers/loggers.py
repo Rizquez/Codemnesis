@@ -20,6 +20,8 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['ManageLogger']
+
 LOGGER_FILE = 'AutoDocMind'
 
 class ManageLogger:

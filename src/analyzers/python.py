@@ -14,6 +14,8 @@ from settings.constants import ALGORITHM
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['analyze_file']
+
 logger = logging.getLogger(ALGORITHM)
 """
 Instance of the logger used by the analysis module.
