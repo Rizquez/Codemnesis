@@ -1,90 +1,90 @@
 # 🤖 AutoDocMind - v.0.0.1
 
-## 🧾 Descripcion del proyecto
+## 🧾 Project description
 
-**AutoDocMind** es una herramienta que analiza automaticamente repositorios de codigo para generar documentacion clara y util.
+**AutoDocMind** is a tool that automatically analyzes code repositories to generate clear and useful documentation.
 
-Su objetivo es ahorrar tiempo a los desarrolladores creando de forma automatica archivos como el README, diagramas de flujo y explicaciones de cada modulo, sin depender de la redaccion manual.
+Its goal is to save developers time by automatically creating files such as README, flowcharts, and explanations of each module, without relying on manual writing.
 
-Combina analisis estatico del codigo con procesamiento de lenguaje natural para ofrecer una vision comprensible del proyecto, sus dependencias y su estructura interna.
+It combines static code analysis with natural language processing to provide a comprehensive overview of the project, its dependencies, and its internal structure.
 
-## 📑 Contexto
+## 📑 Context
 
-La documentacion tecnica suele quedarse atras frente al ritmo de desarrollo, generando tres problemas comunes: **curvas de entrada altas**, **conocimiento disperso** y **mantenimiento costoso**. Actualizar manualmente READMEs, diagramas y docstrings no escala y termina desincronizado del codigo.
+Technical documentation often lags behind the pace of development, creating three common problems: **steep learning curves**, **scattered knowledge** and **costly maintenance**. Manually updating READMEs, diagrams, and docstrings does not scale and ends up out of sync with the code.
 
-**AutoDocMind** nace para automatizar ese *trabajo invisible*: analiza un repositorio y genera **documentacion explicativa** directamente desde el codigo, describiendo flujos, dependencias, responsabilidades y posibles mejoras.
+**AutoDocMind** was created to automate this *invisible work*: it analyzes a repository and generates **explanatory documentation** directly from the code, describing flows, dependencies, responsibilities, and possible improvements.
 
-### ¿Para quien es util?
+### Who is it useful for?
 
-- **Equipos** que necesitan onboardings rapidos y documentacion viva.  
-- **Freelancers o consultoras** que entregan proyectos con README profesionales.  
-- **Mantenedores o revisores** que buscan detectar acoplamientos o puntos fragiles.  
-- **Portafolios tecnicos** que quieren reflejar arquitectura y decisiones de diseño.
+- **Teams** that need quick onboarding and living documentation.  
+- **Freelancers or consultants** who deliver projects with professional README files.  
+- **Maintainers or reviewers** looking to detect couplings or fragile points.  
+- **Technical portfolios** that want to reflect architecture and design decisions.
 
-### Ejemplos de uso
+### Examples of use
 
-- Heredar un proyecto sin documentacion y obtener una **radiografia tecnica inicial**.  
-- Preparar una **release** y validar documentacion y dependencias.  
-- Realizar **revisiones tecnicas** automatizadas para identificar funciones “magicas” o modulos poco cohesionados.
+- Inherit a project without documentation and obtain an **initial technical overview**.
+- Prepare a **release** and validate documentation and dependencies.
+- Perform automated **technical reviews** to identify *magic* functions or poorly cohesive modules.
 
-## 🛠️ Funcionalidades clave
+## 🛠️ Key features
 
 ...
 
-## 💽 Instalacion
+## 💽 Installation (Windows)
 
-Clona este repositorio (ssh):
+Clone this repository (ssh):
 ```sh
 git clone git@github.com:Rizquez/AutoDocMind.git
 ```
 
-Accede al directorio del proyecto:
+Access the project directory:
 ```sh
 cd AutoDocMind
 ```
 
-Crea un entorno de desarrollo utilizando la libreria **virtualenv**:
+Create a development environment using the **virtualenv** library:
 ```sh
 virtualenv venv
 ```
 
-Si no tienes la libreria instalada, puedes ejecutar:
+If you do not have the library installed, you can run:
 ```sh
 python -m venv env
 ```
 
-Activa el entorno de desarrollo:
+Activate the development environment:
 ```sh
 venv\Scripts\activate
 ```
 
-Una vez activado el entorno, instala las dependencias:
+Once the environment is activated, install the dependencies:
 ```sh
 pip install -r requirements.txt
 ```
 
-## 🚀 Ejecucion
+## 🚀 Execution
 
-### Consola
+### Console
 
-Para ejecutar la aplicacion por consola podras utilizar el siguiente comando que se muestra como ejemplo:
+To run the application from the console, you can use the following command shown as an example:
 
 ```sh
-python main.py --lang=... --repo=... --output=...
+python main.py --framework=... --repository=... --output=...
 ```
 
-Donde:
+Where:
 
-- **lang:** Lenguajes de programacion soportados por el algoritmo.
-- **repo:** Directorio del respositorio que alberga el proyecto.
-- **output (opcional):** Directorio donde se guardaran los archivos generados, de no indicarse, el carpeta donde se almacenran los archivos se creara en la *raiz de este proyecto*.
+- **framework:** Programming languages and frameworks supported by the algorithm.
+- **repository:** Directory of the repository that hosts the project.
+- **output (optional):** Directory where the generated files will be saved. If not specified, the folder where the files are stored will be created in the *root of this project*.
 
 > [!NOTE]
-> Para conocer mas **detalles sobre los parametros y argumentos de ejecucion**, consulta el archivo ubicado en: *handlers/console.py*
+> For more details about the parameters and execution arguments, see the file located at: *handlers/console.py*
 
 ## 📂 Estructura del proyecto
 
-Los archivos principales se encuentran organizados en:
+The main files are organized into:
 
 ```
 AutoDocMind/
@@ -103,13 +103,13 @@ AutoDocMind/
 └── requirements.txt
 ```
 
-## 🎯 Consideraciones adicionales para desarrolladores
+## 🎯 Additional considerations for developers
 
 ### Forward References (PEP 484)
 
-El proyecto utiliza `Forward References` segun la `PEP 484`. Mediante el uso de `TYPE_CHECKING`, la importacion de una clase se realiza unicamente en tiempo de chequeo estatico de tipos (por ejemplo, con `mypy`). Durante la ejecucion, `TYPE_CHECKING` evalua como `False`, evitando la importacion real. Esto optimiza el rendimiento y permite referencias adelantadas a clases.
+The project uses *Forward References* according to *PEP 484*. By using `TYPE_CHECKING`, the import of a class is only performed at static type checking time (for example, with *mypy*). During execution, `TYPE_CHECKING` evaluates to `False`, preventing the actual import. This optimizes performance and allows forward references to classes.
 
-Ejemplo:
+Example:
 
 ```python
 from typing import TYPE_CHECKING
@@ -122,43 +122,41 @@ class MySecondClass:
         pass
 ```
 
-### Convencion para atributos y metodos privados (Name mangling)
+### Convention for private attributes and methods (Name mangling)
 
-En Python, no existe una verdadera encapsulacion como en otros lenguajes (Java, C++), pero se puede simular mediante convenciones. En este proyecto, se utiliza el mecanismo conocido como `Name Mangling` para nombrar atributos y metodos privados, lo cual implica el uso de doble guion bajo (__) al inicio del nombre.
+In Python, there is no true encapsulation as in other languages (Java, C++), but it can be simulated using conventions. In this project, the mechanism known as `Name Mangling` is used to name private attributes and methods, which involves using a double underscore (__) at the beginning of the name.
 
-Este mecanismo no solo indica la intencion de mantener estos elementos como privados, sino que Python modifica internamente sus nombres para evitar colisiones, especialmente en clases heredadas.
+This mechanism not only indicates the intention to keep these elements private, but Python also internally modifies their names to avoid collisions, especially in inherited classes.
 
-¿Como funciona? Cuando se define un atributo como `__mi_atributo` dentro de una clase, Python lo convierte internamente a `_NombreClase__mi_atributo`, dificultando el acceso externo accidental o no deseado.
+How does it work? When an attribute is defined as `__my_attribute` within a class, Python internally converts it to `_ClassName__my_attribute`, making accidental or unwanted external access difficult.
 
-Ejemplo:
+Example:
 
 ```python
-class Motor:
+class Engine:
     def __init__(self):
-        self.__estado = "apagado"
+        self.__status = "on"
 
-    def encender(self):
-        self.__estado = "encendido"
+    @property
+    def status(self):
+        return self.__status
 
-    def estado(self):
-        return self.__estado
-
-m = Motor()
-print(m.estado())          # ✔️ Salida: encendido
-print(m.__estado)          # ❌ Error: AttributeError
-print(m._Motor__estado)    # ✔️ Acceso posible, pero no recomendado (Salida: encendido)
+m = Engine()
+print(m.status)            # ✔️ Output: on
+print(m.__status)          # ❌ Error: AttributeError
+print(m._Motor__status)    # ✔️ Access possible, but not recommended (Output: on)
 ```
 > [!WARNING]
-> Aunque tecnicamente es accesible mediante el nombre mangled, su uso directo esta desaconsejado fuera del contexto de la propia clase.
+> Although technically accessible via the mangled name, its direct use is discouraged outside the context of the class itself.
 
-## 📖 Documentacion adicional
+## 📖 Additional documentation
 
 ...
 
-## 🔒 Licencia
+## 🔒 License
 
-Este proyecto esta bajo la licencia `MIT`, lo que permite su uso, distribucion y modificacion con las condiciones especificadas en el archivo `LICENSE`.
+This project is licensed under the *MIT* license, which allows its use, distribution, and modification under the conditions specified in the *LICENSE* file.
 
-## ⚙ Contacto, soporte y desarrollo
+## ⚙ Contact, support, and development
 
 - Pedro Rizquez: pedro.rizquez.94@hotmail.com

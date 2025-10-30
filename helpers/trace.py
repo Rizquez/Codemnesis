@@ -1,4 +1,4 @@
-# LIBRERIAS (EXTERNAS)
+# MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from typing import TYPE_CHECKING, List, Tuple
 
@@ -6,31 +6,29 @@ if TYPE_CHECKING:
     from logging import Logger
 # ---------------------------------------------------------------------------------------------------------------------
 
-# LIBRERIAS (INTERNAS)
+# MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-# Se referencian aqui!
-# ---------------------------------------------------------------------------------------------------------------------
-
-# OPERATIVO / CREACION DE CLASE(S) / FUNCIONES GENERALES
+# Get listed here!
 # ---------------------------------------------------------------------------------------------------------------------
 
-def error_trace(indicator: str, tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Exception) -> None:
+# OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
+# ---------------------------------------------------------------------------------------------------------------------
+
+def error_trace(tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Exception) -> None:
     """
-    Registra en el logger un error con informacion de la traza filtrada.
+    It records an error in the logger with filtered trace information.
 
-    La funcion procesa la traza de error y elimina aquellas entradas que provienen de librerias externas, las cuales 
-    se ubican en `Lib\\site-packages`. De esta manera se conserva un traceback mas relevante y enfocado en el codigo 
-    propio de la aplicacion.
+    The function processes the error trace and removes entries that come from external libraries, 
+    which are located in `Lib\\site-packages`. This preserves a more relevant traceback focused on 
+    the application's own code.
 
     Args:
-        indicator (str): 
-            Texto indicador del contexto del error.
         tb (List[Tuple[str, int, str, str]]): 
-            Trazas obtenidas con `traceback.extract_tb`.
+            Traces obtained with `traceback.extract_tb`.
         logger (Logger): 
-            Instancia de logger donde se registrara el error.
+            Logger instance where the error will be recorded.
         error (Exception): 
-            Objeto de excepcion capturado.
+            Captured exception object.
     """
     filtered = [
         (filename, line, funcname, text) 
@@ -39,12 +37,12 @@ def error_trace(indicator: str, tb: List[Tuple[str, int, str, str]], logger: 'Lo
     ]
 
     if not filtered:
-        logger.error(f"{indicator}: {error} - No relevant traceback found")
+        logger.error(f"{error} - No relevant traceback found")
         return
     
     filename, line, funcname, text = filtered[-1]
 
-    logger.error(f"{indicator}: {error} in {text} on {funcname}, file {filename} in line {line}")
+    logger.error(f"{error} occurred while processing {text} in function {funcname} (file: {filename}, line: {line})")
 
 # ---------------------------------------------------------------------------------------------------------------------
-# FIN DEL FICHERO
+# END OF FILE

@@ -1,4 +1,4 @@
-# LIBRERIAS (EXTERNAS)
+# MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 import os
 from typing import TYPE_CHECKING
@@ -8,54 +8,59 @@ if TYPE_CHECKING:
     from argparse import Namespace
 # ---------------------------------------------------------------------------------------------------------------------
 
-# LIBRERIAS (INTERNAS)
+# MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-# Se referencian aqui!
+# Get listed here!
 # ---------------------------------------------------------------------------------------------------------------------
 
-# OPERATIVO / CREACION DE CLASE(S) / FUNCIONES GENERALES
+# OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
 class Console:
     """
-    Clase encargada de gestionar y validar los argumentos recibidos por consola.
+    Class responsible for managing and validating arguments received by the console.
 
-    **Proposito:**
-        - Definir los argumentos requeridos y opcionales para la ejecucion.
-        - Parsear los valores introducidos por el usuario.
-        - Aplicar validaciones basicas sobre los argumentos recibidos.
-        - Devolver los argumentos como un objeto `Namespace` listo para usar.
+    **Purpose:**
+        - Define the required and optional arguments for execution.
+        - Parse the values entered by the user.
+        - Apply basic validations on the arguments received.
+        - Return the arguments as a `Namespace` object ready for use.
     """
 
     @classmethod
     def arguments(cls) -> 'Namespace':
         """
-        Define, procesa y valida los argumentos de consola para la ejecucion del algoritmo.
+        Defines, processes, and validates console arguments for algorithm execution.
 
         Returns:
             Namespace: 
-                Objeto con los argumentos parseados y validados.
+                Object with parsed and validated arguments.
         """
         parser = ArgumentParser(
-            description="Argumentos requeridos y opcionales para ejecutar el algormitmo"
+            description="Required and optional arguments for executing the algorithm"
         )
         
         parser.add_argument(
-            '--lang',
+            '--framework',
             required=True,
             choices=['python'],
-            help="Lenguajes de programacion soportados por el algoritmo"
+            help="Programming languages and frameworks supported by the algorithm"
         )
 
         parser.add_argument(
-            '--repo',
+            '--repository',
             required=True,
-            help="Directorio del respositorio que alberga el proyecto"
+            help="Directory of the repository hosting the project"
         )
 
         parser.add_argument(
             '--output',
-            help="Directorio donde se guardaran los archivos generados"
+            help="Directory where the generated files will be stored"
+        )
+
+        parser.add_argument(
+            '--exclude',
+            help="Additional files/extensions to exclude from the scan, separated by commas if multiple are specified"
         )
 
         args = parser.parse_args()
@@ -67,26 +72,25 @@ class Console:
     @staticmethod
     def __validate(args: 'Namespace', parser: ArgumentParser) -> None:
         """
-        Realiza validaciones sobre los argumentos recibidos desde consola.
+        Performs validations on arguments received from the console.
 
         Args:
             args (Namespace): 
-                Argumentos parseados desde la consola.
+                Arguments parsed from the console.
             parser (ArgumentParser): 
-                Parser utilizado para lanzar mensajes de error.
+                Parser used to throw error messages.
 
         Raises:
             SystemExit: 
-                Si alguna validacion falla, se invoca `parser.error`, 
-                lo que detiene la ejecucion y muestra el mensaje de 
-                error correspondiente.
+                If any validation fails, `parser.error` is invoked, which stops execution 
+                and displays the corresponding error message.
         """
-        if not os.path.exists(args.repo):
-            parser.error("El parametro enviado en `--repo` debe ser un directorio valido!")
+        if not os.path.exists(args.repository):
+            parser.error("The parameter sent in `--repository` must be a valid directory!")
 
         if args.output:
             if not os.path.exists(args.output):
-                parser.error("El parametro enviado en `--output` debe ser un directorio valido!")
+                parser.error("The parameter sent in `--output` must be a valid directory!")
 
 # ---------------------------------------------------------------------------------------------------------------------
-# FIN DEL FICHERO
+# END OF FILE

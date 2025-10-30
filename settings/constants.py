@@ -1,36 +1,25 @@
-# LIBRERIAS (EXTERNAS)
+# MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-# Se referencian aqui!
-# ---------------------------------------------------------------------------------------------------------------------
-
-# LIBRERIAS (INTERNAS)
-# ---------------------------------------------------------------------------------------------------------------------
-# Se referencian aqui!
+from typing import Set
 # ---------------------------------------------------------------------------------------------------------------------
 
-# OPERATIVO / CREACION DE CLASE(S) / FUNCIONES GENERALES
+# MODULES (INTERNAL)
+# ---------------------------------------------------------------------------------------------------------------------
+# Get listed here!
+# ---------------------------------------------------------------------------------------------------------------------
+
+# OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
 ALGORITHM = 'ALGORITHM'
 """
-Manejador del fichero `.log` para el almacenado de la traza de ejecucion.
+Handler for the `.log` file for storing the execution trace.
 """
 
-
-ALGORITHM_VERSION = '0.0.1'
+ALGORITHM_VERSION = '0.1.0'
 """
-Version actual del algoritmo.
-"""
-
-FOLDER_OUTPUT = 'Output-AutoDocMind'
-"""
-Directorio de salida donde se almacenaran todos los archivos generados.
-"""
-
-FILE_LOG = 'AutoDocMind'
-"""
-Nombre que se le asignara al fichero `.log` generado sobre la ejecucion del algoritmo.
+Current version of the algorithm.
 """
 
 # ---------------------------------------------------------------------------------------------------------------------
-# FIN DEL FICHERO
+# END OF FILE

@@ -1,4 +1,4 @@
-# LIBRERIAS (EXTERNAS)
+# MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 import os
 import logging
@@ -9,50 +9,55 @@ if TYPE_CHECKING:
     from logging import Logger
 # ---------------------------------------------------------------------------------------------------------------------
 
-# LIBRERIAS (INTERNAS)
+# MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from settings.constants import ALGORITHM, FILE_LOG
+from settings.constants import ALGORITHM
 
 if TYPE_CHECKING:
     from settings.algorithm import Settings
 # ---------------------------------------------------------------------------------------------------------------------
 
-# OPERATIVO / CREACION DE CLASE(S) / FUNCIONES GENERALES
+# OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
+
+LOGGER_FILE = 'AutoDocMind'
 
 class ManageLogger:
     """
-    Clase encargada de gestionar la configuracion del logger utilizado en la aplicacion.
+    Class responsible for managing the configuration of the logger used in the application.
 
-    Esta clase centraliza la inicializacion y configuracion de logger para la capa de `Algoritmo`. 
+    This class centralizes the initialization and configuration of the logger for the `Algorithm` layer. 
 
-    Su objetivo es asegurar que cada componente de la aplicacion tenga un sistema de logging consistente y separado.
+    Its purpose is to ensure that each component of the application has a consistent and separate logging system.
 
-    **Puntos clave:**
-        - **Niveles distintos:** 
-            - Algoritmo → admite `DEBUG`, `INFO`, `WARNING`, `ERROR`.
+    **Key points:**
+        - **Different levels:**
+            - Algorithm → supports `DEBUG`, `INFO`, `WARNING`, `ERROR`.
     """
 
     @classmethod
     def algorithm(cls, settings: 'Settings') -> None:
         """
-        Configura el logger asociado a la capa de **Algoritmo**.
+        Configures the logger associated with the **Algorithm** layer.
+
+        **Notes:**
+            - This method *creates the output directory* that will contain all generated files.
 
         Args:
             settings (Settings):
-                Objeto que contiene los ajustes generales para la ejecucion del algoritmo.
+                Object containing the general settings for executing the algorithm.
         """
         folder = settings.output
         
         os.makedirs(folder, exist_ok=True)
 
-        file = os.path.join(folder, f'{FILE_LOG}.log')
+        file = os.path.join(folder, f'{LOGGER_FILE}.log')
 
         logger = logging.getLogger(ALGORITHM)
         if logger.handlers: 
-            return # Evita duplicar handlers si ya se configuro antes
+            return # Avoid duplicating handlers if they have already been configured
         
-        # El fichero solo guarda INFO/ERROR/WARNING, aunque el logger acepte DEBUG
+        # The file only saves INFO/ERROR/WARNING, even if the logger accepts DEBUG
         logger.setLevel(logging.DEBUG)
         logger.propagate = False
         logger.addHandler(cls.__handler(file))
@@ -61,15 +66,15 @@ class ManageLogger:
     @staticmethod
     def close_logger(logger: 'Logger') -> None:
         """
-        Cierra y elimina todos los handlers asociados a un logger especifico.
+        Closes and removes all handlers associated with a specific logger.
 
-        - Recorre todos los handlers activos del logger.
-        - Cierra cada handler para liberar descriptores de archivo.
-        - Remueve los handlers del logger para dejarlo limpio.
+        - Iterates through all active handlers of the logger.
+        - Closes each handler to free file descriptors.
+        - Removes the handlers from the logger to leave it clean.
 
         Args:
             logger (Logger):
-                Instancia del logger que se desea cerrar.
+                Instance of the logger to be closed.
         """
         lst_handlers = logger.handlers[:]
         for handler in lst_handlers:
@@ -86,30 +91,30 @@ class ManageLogger:
         encoding: str = 'utf-8'
     ) -> RotatingFileHandler:
         """
-        Crea un `RotatingFileHandler` para escribir los logs en un fichero con rotacion automatica.
+        Create a `RotatingFileHandler` to write logs to a file with automatic rotation.
 
         Args:
             file (str):
-                Ruta completa del archivo de log.
+                Full path of the log file.
             level (int, optional):
-                Nivel de log.
+                Log level.
             size (int, optional):
-                Maximo tamaño que podra tener el fichero antes de realizar la copia de seguridad.
+                Maximum size the file can have before backing up.
             backup (int, optional):
-                Cantidad de copias de seguridad que se podran generar.
+                Number of backups that can be generated.
             encoding (str, optional):
-                Formato de codificacion para la escritura del fichero log.
+                Encoding format for writing the log file.
 
         Returns:
             RotatingFileHandler:
-                Handler configurado con formato y rotacion.
+                Handler configured with format and rotation.
         """
         handler = RotatingFileHandler(
             file, 
             maxBytes=size, 
             backupCount=backup, 
             encoding=encoding,
-            delay=True # El fichero se crea recien cuando se escribe el primer log
+            delay=True # The file is created only when the first log is written
         )
 
         handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
@@ -120,17 +125,17 @@ class ManageLogger:
     @staticmethod
     def __stream_handler() -> logging.StreamHandler:
         """
-        Crea un `StreamHandler` para mostrar los logs directamente en consola.
+        Creates a `StreamHandler` to display logs directly on the console.
 
         Returns:
             logging.StreamHandler:
-                Handler configurado para salida estandar.
+                Handler configured for standard output.
         """
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
-        handler.setLevel(logging.DEBUG) # Consola mostrara DEBUG (mas detallado que el fichero)
+        handler.setLevel(logging.DEBUG) # Console will display DEBUG (more detailed than the file)
 
         return handler
 
 # ---------------------------------------------------------------------------------------------------------------------
-# FIN DEL FICHERO
+# END OF FILE

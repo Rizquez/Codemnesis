@@ -1,47 +1,66 @@
-# LIBRERIAS (EXTERNAS)
+# MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Set
 
 if TYPE_CHECKING:
     from argparse import Namespace
 # ---------------------------------------------------------------------------------------------------------------------
 
-# LIBRERIAS (INTERNAS)
+# MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from settings.constants import FOLDER_OUTPUT
+# Get listed here!
 # ---------------------------------------------------------------------------------------------------------------------
 
-# OPERATIVO / CREACION DE CLASE(S) / FUNCIONES GENERALES
+# OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
+
+OUTPUT_FOLDER = 'AutoDocMind-Output'
+
+INCLUDED: Set[str] = {'.py'}
+
+EXCLUDED: Set[str] = {
+    '.git', '.hg', '.svn', '.idea', '.vscode', '.ruff_cache', '.mypy_cache', '.pytest_cache', '.tox', '.eggs', 
+    '__pycache__', 'build', 'dist', 'site-packages', 'node_modules', 'venv', '.venv', 'env', '.env'
+}
 
 class Settings:
     """
-    Clase que construye y gestiona la configuracion especifica para la ejecucion del algoritmo.
+    Class that builds and manages the specific configuration for executing the algorithm.
 
-    **Proposito:**
-        - Centralizar la carga de argumentos de entrada.
-        - Definir y preparar las rutas necesarias para almacenar la salida de los archivos generados.
+    **Purpose:**
+        - Centralize the loading of input arguments.
+        - Define and prepare the necessary paths for storing the output of the generated files.
 
-    Al instanciar esta clase, se generan automaticamente las rutas de salida y los recursos necesarios.
+    When this class is instantiated, the output paths and necessary resources are automatically generated.
     """
 
     def __init__(self, args: 'Namespace') -> None:
-        self.__lang = args.lang
-        self.__repo = args.repo
+        self.__framework = args.framework
+        self.__repository = args.repository
+        self.__excluded = self.__set_excluded(args.excluded)
+        self.__included = INCLUDED
 
         if args.output:
-            self.__output = os.path.join(args.output, FOLDER_OUTPUT)
+            self.__output = os.path.join(args.output, OUTPUT_FOLDER)
         else:
-            self.__output = os.path.join(self.__get_root(), FOLDER_OUTPUT)
+            self.__output = os.path.join(self.__get_root(), OUTPUT_FOLDER)
 
     @property
-    def lang(self) -> str:
-        return self.__lang
+    def framework(self) -> str:
+        return self.__framework
     
     @property
-    def repo(self) -> str:
-        return self.__repo
+    def repository(self) -> str:
+        return self.__repository
+    
+    @property
+    def excluded(self) -> Set[str]:
+        return self.__excluded
+    
+    @property
+    def included(self) -> Set[str]:
+        return self.__included
     
     @property
     def output(self) -> str:
@@ -50,14 +69,32 @@ class Settings:
     @staticmethod
     def __get_root() -> str:
         """
-        Este metodo estatico determina la ruta absoluta del archivo actual, 
-        elimina el ultimo nivel del directorio y devuelve la ruta resultante.
+        This static method determines the absolute path of the current file, 
+        removes the last directory level, and returns the resulting path.
 
         Returns:
             str: 
-                Ruta absoluta del directorio raiz del proyecto.
+                Absolute path of the project root directory.
         """
         return '\\'.join(item for item in os.path.dirname(os.path.abspath(__file__)).split('\\')[:-1])
+    
+    @staticmethod
+    def __set_excluded(excluded: str) -> Set[str]:
+        """
+        Updates the set of directories or files excluded from analysis.
+
+        Converts the received string into a set of values separated by commas, and adds them 
+        to the global set `EXCLUDED`.
+
+        Args:
+            excluded (str):
+                String with the names of directories or files to exclude, separated by commas.
+
+        Returns:
+            Set[str]:
+                Updated set of exclusions.
+        """
+        return EXCLUDED.update(set(excluded.split(',')))
 
 # ---------------------------------------------------------------------------------------------------------------------
-# FIN DEL FICHERO
+# END OF FILE
