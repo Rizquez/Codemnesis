@@ -77,32 +77,39 @@ class HtmlGenerator:
             parts = [f'<section id="{id_module}" data-module="{label.lower()}">']
             parts.append(f'<h2>Module: {label}</h2>')
 
-            if module.classes:
-                parts.append('<h3>Classes</h3>')
-                for clss in module.classes:
-                    id_clss = f'{id_module}::class::{cls.__escape(clss.name)}'
-                    parts.append(
-                        f"""
-                            <details id="{id_clss}">
-                                <summary>{cls.__escape(clss.name)}</summary>
-                                {DocStrings.to_html(clss.doc, cleaned=cleaned) if clss.doc else ''}
-                                {cls.__render_methods(clss.methods, cleaned)}
-                            </details>
-                        """
-                    )
+            if not module.classes and not module.functions:
+                parts.append('<p class=italics>This module does not contain documentation on classes or functions.</p>')
+            else:
+                if module.classes:
+                    parts.append('<h3>Classes</h3>')
+                    for clss in module.classes:
+                        id_clss = f'{id_module}::class::{cls.__escape(clss.name)}'
+                        parts.append(
+                            f"""
+                                <details id="{id_clss}">
+                                    <summary>{cls.__escape(clss.name)}</summary>
+                                    <div class="card function">
+                                        {DocStrings.to_html(clss.doc, cleaned=cleaned) if clss.doc else '<br/>'}
+                                        {cls.__render_methods(clss.methods, cleaned)}
+                                    </div>
+                                </details>
+                            """
+                        )
 
-            if module.functions:
-                parts.append('<h3>Functions</h3>')
-                for func in module.functions:
-                    fid = f'{id_module}::func::{cls.__escape(func.name)}'
-                    parts.append(
-                        f"""
-                            <details id="{fid}">
-                                <summary>{cls.__escape(func.name)} - Number of lines: {func.lineno}</summary>
-                                {DocStrings.to_html(func.doc, cleaned=cleaned) if func.doc else ''}
-                            </details>
-                        """
-                    )
+                if module.functions:
+                    parts.append('<h3>Functions</h3>')
+                    for func in module.functions:
+                        fid = f'{id_module}::func::{cls.__escape(func.name)}'
+                        parts.append(
+                            f"""
+                                <details id="{fid}">
+                                    <summary>{cls.__escape(func.name)} (Declared in line: {func.lineno})</summary>
+                                    <div class="card function">
+                                        {DocStrings.to_html(func.doc, cleaned=cleaned) if func.doc else '<br/>'}
+                                    </div>
+                                </details>
+                            """
+                        )
 
             parts.append('</section>')
             sections.append("\n".join(parts))
@@ -143,11 +150,9 @@ class HtmlGenerator:
         for method in methods:
             out.append(
                 f"""
-                    <div>
-                        <div>
-                            Method: {html.escape(method.name)} (Number of lines: {method.lineno})
-                        </div>
-                        {DocStrings.to_html(method.doc, cleaned=cleaned) if method.doc else ''}
+                    <div class="card method">
+                        <span class="italics">{html.escape(method.name)} (Declared in line: {method.lineno})</span>
+                        {DocStrings.to_html(method.doc, cleaned=cleaned) if method.doc else '<br/>'}
                     </div>
                 """
             )
@@ -167,7 +172,7 @@ class HtmlGenerator:
             str:
                 Text escaped with HTML entities, if None, returns an empty string.
         """
-        return html.escape(section) if section else ''
+        return html.escape(section) if section else '<br/>'
 
     @staticmethod
     def write(text: str, output: str) -> Path:

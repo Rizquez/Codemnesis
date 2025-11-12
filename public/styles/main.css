@@ -77,7 +77,8 @@ body {
 }
 
 footer {
-	color: var(--text-100);
+	color: var(--accent-200);
+	text-align: right;
 }
 
 /********************************************
@@ -86,60 +87,118 @@ Global configuration styles
 h1 {
 	font-size: 1.8rem;
 	font-weight: 600;
-	color: var(--text-100);
-	margin-bottom: 20px;
+	color: var(--accent-200);
+	margin-bottom: 30px;
 }
 
 h2 {
 	font-size: 1.5rem;
 	font-weight: 500;
-	color: var(--text-100);
+	color: var(--accent-200);
+	margin-bottom: 20px;
 }
 
 h3 {
   	font-size: 1.2rem;
 	font-weight: 400;
-	color: var(--text-100);
+	color: var(--accent-200);
 }
 
 p, li, a, summary, details {
   	font-size: 1rem;
 	text-decoration: none;
-	color: var(--text-200);
 	font-weight: lighter;
+	color: var(--text-200);
 }
 
 /********************************************
-Layout: sidebar (left) + section (right)
+Layout: sidebar + section
 ********************************************/
 main {
 	display: flex;
 	min-height: 100vh;
 	padding: 20px 0px;
 	margin-top: 10px;
+	border-top: 1px solid var(--accent-100);
 }
 
 section {
 	flex: 1;
 	box-sizing: border-box;
-	margin-left: 10px;
 }
 
 aside {
-	flex: 0 0 300px;
+	flex: 0 0 350px;
 	box-sizing: border-box;
-	border-right: 1px solid var(--accent-100);
 }
-aside nav a:hover { 
-	color: var(--primary-300);
+aside nav {
+	border-left: 1px solid var(--accent-100);
+	padding-left: 10px;
 }
 aside li {
 	margin: 10px 0;
 }
-aside h3 {
+aside h2 {
 	margin-bottom: 20px;
+}
+aside nav a:hover { 
+	color: var(--primary-300);
+	text-decoration: underline;
 }
 
 /********************************************
-Layout: section (right)
+Layout: section
 ********************************************/
+main > section > section:not(:first-of-type) {
+  margin-top: 20px;
+}
+
+section h3 {
+	margin: 20px 0 5px;
+}
+section p, li {
+	margin: 6px 0;
+}
+
+summary {
+  display: inline-block;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+details[open] > summary {
+  font-weight: 600;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/********************************************
+Custom styles
+********************************************/
+.italics {
+	font-style: italic;
+}
+
+.card {
+	border-radius: 10px;
+	background-color: var(--primary-100);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.15);
+ 	transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.function {
+	width: 1400px;
+}
+
+.method {
+	width: 1340px;
+	margin-top: 20px;
+}
+
+.function, .method {
+	padding: 30px;
+}

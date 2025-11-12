@@ -58,27 +58,30 @@ class ReadmeGenerator:
             relative = Path(module.path).resolve().relative_to(Path(directory).resolve())
             lines.append(f'## 🧩 Module: `{relative.as_posix()}`\n')
 
-            if module.classes:
-                for clss in module.classes:
-                    lines.append(f'### Class: `{clss.name}`\n')
+            if not module.classes and not module.functions:
+                lines.append('*This module does not contain documentation on classes or functions.*')
+            else:
+                if module.classes:
+                    for clss in module.classes:
+                        lines.append(f'### Class: `{clss.name}`\n')
 
-                    if clss.doc:
-                        lines.append(DocStrings.to_readme(clss.doc, cleaned=cleaned) + '\n')
+                        if clss.doc:
+                            lines.append(DocStrings.to_readme(clss.doc, cleaned=cleaned) + '\n')
 
-                    for meth in clss.methods:
-                        lines.append(f'#### Method: `{meth.name}` (*Number of lines: {meth.lineno}*)\n')
+                        for meth in clss.methods:
+                            lines.append(f'#### Method: `{meth.name}` (*Declared in line: {meth.lineno}*)\n')
 
-                        if meth.doc:
-                            lines.append(DocStrings.to_readme(meth.doc, cleaned=cleaned) + '\n')
+                            if meth.doc:
+                                lines.append(DocStrings.to_readme(meth.doc, cleaned=cleaned) + '\n')
 
-            if module.functions:
-                lines.append('### Functions\n')
+                if module.functions:
+                    lines.append('### Functions\n')
 
-                for func in module.functions:
-                    lines.append(f'#### `{func.name}` - *Number of lines: {func.lineno}*\n')
+                    for func in module.functions:
+                        lines.append(f'#### `{func.name}` - *Declared in line: {func.lineno}*\n')
 
-                    if func.doc:
-                        lines.append(DocStrings.to_readme(func.doc, cleaned=cleaned) + '\n')
+                        if func.doc:
+                            lines.append(DocStrings.to_readme(func.doc, cleaned=cleaned) + '\n')
 
         return '\n'.join(lines)
 
