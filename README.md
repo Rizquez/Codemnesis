@@ -1,4 +1,4 @@
-# 🤖 AutoDocMind - v.0.4.1
+# 🤖 AutoDocMind - v.0.4.2
 
 ## 🧾 Project description
 
@@ -29,15 +29,11 @@ Technical documentation often lags behind the pace of development, creating thre
 
 ## 🛠️ Key features
 
-- Automatic analysis of projects in `Python` and `C#`.
+- Automatic analysis of projects in `C#`.
 - Detection of classes, methods, and functions (depending on the language).
-- Obtaining the line where each element is declared.
-- Extraction of *docstrings* in Python.
-- Extraction and processing of *XML* documentation in C#.
 - Cleaning and uniform formatting of documentation before rendering.
 - Generation of documentation in `README.md`.
-- Generation of interactive `HTML` documentation with sidebar and collapsible sections.
-- `CLI` support for specifying *framework*, *repository*, *exclusions*, and *output folder*.
+- `CLI` support for specifying options.
 
 ## 💽 Installation (Windows)
 
@@ -78,7 +74,7 @@ pip install -r requirements.txt
 To run the application from the console, you can use the following command shown as an example:
 
 ```sh
-python main.py --framework=... --repository=... --output=... --excluded=...
+python main.py --framework=... --repository=... --output=... --excluded=... --typeof=...
 ```
 
 Where:
@@ -86,7 +82,8 @@ Where:
 - **framework:** Programming languages and frameworks supported by the algorithm.
 - **repository:** Directory of the repository that hosts the project.
 - **output (optional):** Directory where the generated files will be saved. If not specified, the folder where the files are stored will be created in the *root of this project*.
-- **excluded (optional):** Additional files y/o extensions to exclude from the scan, separated by commas if multiple are specified.
+- **excluded (optional):** Additional files and extensions to exclude from the scan, separated by commas if multiple are specified.
+- **typeof (optional):** Type of document to generate, by default it will be a README.
 
 > [!NOTE]
 > For more details about the parameters and execution arguments, see the file located at: *handlers/console.py*
@@ -116,7 +113,6 @@ AutoDocMind/
 │   │   └── csharp.py
 │   ├── generators
 │   │   ├── __init__.py
-│   │   ├── html.py
 │   │   └── readme.py
 │   ├── models
 │   │   └── structures.py

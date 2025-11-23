@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.analyzers import *
+from src.generators import *
 from src.utils.scan import scanner
 from helpers.trace import error_trace
 from settings.constants import ALGORITHM
-from src.generators import ReadmeGenerator, HtmlGenerator
 
 if TYPE_CHECKING:
     from settings.algorithm import Settings

@@ -67,7 +67,7 @@ class Console:
 
         parser.add_argument(
             '--typeof',
-            choices=['html', 'readme'],
+            choices=['readme'],
             default='readme',
             help="Type of document to generate, by default it will be a readme"
         )
