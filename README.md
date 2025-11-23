@@ -1,4 +1,4 @@
-# 🤖 AutoDocMind - v.0.4.0
+# 🤖 AutoDocMind - v.0.4.1
 
 ## 🧾 Project description
 
@@ -112,7 +112,8 @@ AutoDocMind/
 │   └── constants.py
 ├── src
 │   ├── analyzers
-│   │   └── python.py
+│   │   ├── __init__.py
+│   │   └── csharp.py
 │   ├── generators
 │   │   ├── __init__.py
 │   │   ├── html.py

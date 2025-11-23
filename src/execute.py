@@ -50,15 +50,12 @@ def execute(settings: 'Settings') -> None:
             tb = traceback.extract_tb(line_error)
             error_trace(tb, logger, error)
 
-    logger.info("Generating README ...")
-    readme_txt = ReadmeGenerator.render(modules, settings.repository)
-    readme_target = ReadmeGenerator.write(readme_txt, settings.output)
-    logger.info(f"Ready README: {readme_target}")
+    cls = globals().get(f'{settings.typeof.capitalize()}Generator')
 
-    logger.info("Generating HTML ...")
-    html_txt = HtmlGenerator.render(modules, settings.repository)
-    html_target = HtmlGenerator.write(html_txt, settings.output)
-    logger.info(f"Ready HTML: {html_target}")
+    logger.info(f"Generating {settings.typeof.upper()} ...")
+    txt = cls.render(modules, settings.repository)
+    target = cls.write(txt, settings.output)
+    logger.info(f"Ready {settings.typeof.upper()}: {target}")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

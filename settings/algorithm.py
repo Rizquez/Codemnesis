@@ -46,6 +46,7 @@ class Settings:
         self.__repository: str = args.repository
         self.__excluded: Set[str] = self.__set_excluded(args.excluded)
         self.__included: Set[str] = EXTENSIONS.get(self.__framework.lower(), set())
+        self.__typeof = args.typeof
 
         if args.output:
             self.__output = os.path.join(args.output, OUTPUT_FOLDER)
@@ -71,6 +72,10 @@ class Settings:
     @property
     def output(self) -> str:
         return self.__output
+    
+    @property
+    def typeof(self) -> str:
+        return self.__typeof
     
     @staticmethod
     def __get_root() -> str:

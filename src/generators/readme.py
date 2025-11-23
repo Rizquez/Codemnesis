@@ -29,7 +29,7 @@ class ReadmeGenerator:
     """
 
     @staticmethod
-    def render(modules: List['ModuleInfo'], directory: str, *, cleaned: List[str] = ['*', '`']) -> str:
+    def render(modules: List['ModuleInfo'], directory: str, *, cleaned: List[str] = ['`']) -> str:
         """
         Generates the contents of the README file from the information analyzed from the project modules.
 
@@ -59,29 +59,47 @@ class ReadmeGenerator:
             lines.append(f'## 🧩 Module: `{relative.as_posix()}`\n')
 
             if not module.classes and not module.functions:
-                lines.append('*This module does not contain documentation on classes or functions.*')
+                lines.append('*This module does not contain documentation on classes or functions.*\n')
             else:
                 if module.classes:
                     for clss in module.classes:
-                        lines.append(f'### Class: `{clss.name}`\n')
-
                         if clss.doc:
-                            lines.append(DocStrings.to_readme(clss.doc, cleaned=cleaned) + '\n')
+                            lines.append(
+                                f'### Class: `{clss.name}`\n'
+                                f'{DocStrings.to_readme(clss.doc, cleaned=cleaned, tabulation=False)}\n'
+                            )
+                        else:
+                            lines.append(
+                                f'### Class: `{clss.name}` - '
+                                '*This class does not contain documentation or it has not been possible to extract it.*\n'
+                            )
 
                         for meth in clss.methods:
-                            lines.append(f'#### Method: `{meth.name}` (*Declared in line: {meth.lineno}*)\n')
-
                             if meth.doc:
-                                lines.append(DocStrings.to_readme(meth.doc, cleaned=cleaned) + '\n')
+                                lines.append(
+                                    f'#### `{meth.name}` (*Declared in line: {meth.lineno}*)\n'
+                                    f'{DocStrings.to_readme(meth.doc, cleaned=cleaned, tabulation=False)}\n'
+                                )
+                            else:
+                                lines.append(
+                                    f'#### `{meth.name}` (*Declared in line: {meth.lineno}*) - '
+                                    '*This method does not contain documentation or it has not been possible to extract it.*\n'
+                                )
 
                 if module.functions:
                     lines.append('### Functions\n')
 
                     for func in module.functions:
-                        lines.append(f'#### `{func.name}` - *Declared in line: {func.lineno}*\n')
-
                         if func.doc:
-                            lines.append(DocStrings.to_readme(func.doc, cleaned=cleaned) + '\n')
+                            lines.append(
+                                f'#### `{func.name}` - *Declared in line: {func.lineno}*\n'
+                                f'{DocStrings.to_readme(func.doc, cleaned=cleaned, tabulation=False)}\n'
+                            )
+                        else:
+                            lines.append(
+                                f'#### `{func.name}` - *Declared in line: {func.lineno}* - '
+                                '*This function does not contain documentation or it has not been possible to extract it.*\n'
+                            )
 
         return '\n'.join(lines)
 

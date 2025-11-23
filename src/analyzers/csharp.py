@@ -1,9 +1,8 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-import logging, re
 from pathlib import Path
 from typing import List, Optional
-import xml.etree.ElementTree as ET
+import logging, re, xml.etree.ElementTree as ET
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -120,9 +119,6 @@ def analyze_csharp(path: Path) -> ModuleInfo:
 
         classes.append(cls_info)
 
-    if not classes:
-        logger.info(f"No classes/methods detected in: {path.name}")
-
     return ModuleInfo(
         path=str(path),
         doc=None,           # C# does not have module docstrings
@@ -210,16 +206,16 @@ def _collect_xml_doc(lines: List[str], start_idx: int) -> Optional[str]:
     # PARAMS
     params = root.findall("param")
     if params:
-        parts.append("Params:")
+        parts.append("*Params:*")
 
         for p in params:
             name = p.attrib.get("name", "").strip()
             text = _xml_node_to_text(p).strip()
 
             if name:
-                parts.append(f"  {name}: {text}")
+                parts.append(f"- {name}: {text}")
             else:
-                parts.append(f"  {text}")
+                parts.append(f"- {text}")
 
         parts.append("")
 
@@ -229,23 +225,23 @@ def _collect_xml_doc(lines: List[str], start_idx: int) -> Optional[str]:
         returns_text = _xml_node_to_text(returns_el).strip()
 
         if returns_text:
-            parts.append("Returns:")
-            parts.append(f"  {returns_text}")
+            parts.append("*Returns:*")
+            parts.append(f"- {returns_text}")
             parts.append("")
 
     # EXCEPTIONS
     exceptions = root.findall("exception")
     if exceptions:
-        parts.append("Exceptions:")
+        parts.append("*Exceptions:*")
 
         for ex in exceptions:
             cref = ex.attrib.get("cref", "").strip().lstrip("T:") # Usually comes as T:Name
             text = _xml_node_to_text(ex).strip()
 
             if cref:
-                parts.append(f"  {cref}: {text}")
+                parts.append(f"- {cref}: {text}")
             else:
-                parts.append(f"  {text}")
+                parts.append(f"- {text}")
 
         parts.append("")
 
@@ -288,6 +284,10 @@ def _xml_node_to_text(node: ET.Element) -> str:
 
             if cref:
                 parts.append(cref)
+        elif child.tag == "paramref":
+            name = child.attrib.get("name", "").strip()
+            if name:
+                parts.append(name)
         else:
             text_child = _xml_node_to_text(child)
             
