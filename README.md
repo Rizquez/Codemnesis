@@ -1,4 +1,4 @@
-# 🤖 AutoDocMind - v.0.4.3
+# 🤖 AutoDocMind - v.0.5.0
 
 ## 🧾 Project description
 
@@ -30,7 +30,7 @@ Technical documentation often lags behind the pace of development, creating thre
 ## 🛠️ Key features
 
 - Automatic analysis of projects in `C#`.
-- Detection of classes, methods, and functions (depending on the language).
+- Detection of classes, methods, decorators, and functions (depending on the language).
 - Cleaning and uniform formatting of documentation before rendering.
 - Generation of documentation in `README`.
 - `CLI` support for specifying options.

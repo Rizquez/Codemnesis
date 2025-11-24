@@ -72,6 +72,10 @@ class Readme:
                         else:
                             lines.append(f'### 📜 Class: `{clss.name}` - *{NO_CLASS}*\n')
 
+                        if clss.decorators:
+                            decorators = "\n- ".join(clss.decorators)
+                            lines.append(f'*Decorators:*\n- {decorators}\n')
+
                         for attr in clss.attributes:
                             if attr.doc:
                                 lines.append(
@@ -95,6 +99,10 @@ class Readme:
                                     f'#### 🛠️ *Method declared in line {meth.lineno}*: `{meth.name}` - '
                                     f'*{NO_METHOD}*\n'
                                 )
+                            
+                            if meth.decorators:
+                                decorators = "\n- ".join(meth.decorators)
+                                lines.append(f'*Decorators:*\n- {decorators}\n')
 
                 if module.functions:
                     lines.append('### 📃 Functions\n')

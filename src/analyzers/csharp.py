@@ -90,7 +90,8 @@ def analyze_csharp(path: Path) -> ModuleInfo:
         cls_lineno = src.count("\n", 0, cls_start) + 1
 
         cls_doc = _collect_xml_doc(lines, cls_lineno - 1)
-        cls_info = ClassInfo(name=f"{cls_name}", lineno=cls_lineno, doc=cls_doc)
+        cls_decorators = _collect_decorators(lines, cls_lineno - 1)
+        cls_info = ClassInfo(name=f"{cls_name}", lineno=cls_lineno, doc=cls_doc, decorators=cls_decorators)
 
         # Within the approximate block of that class, search for methods (simple heuristic)
         # Find the closest opening key and count keys to narrow down the block
@@ -131,15 +132,29 @@ def analyze_csharp(path: Path) -> ModuleInfo:
             ctor_lineno = src.count('\n', 0, ctor_abs_start) + 1
             ctor_doc = _collect_xml_doc(lines, ctor_lineno - 1)
 
-            cls_info.methods.append(FunctionInfo(name=cls_name, lineno=ctor_lineno, doc=ctor_doc))
+            cls_info.methods.append(
+                FunctionInfo(
+                    name=cls_name, 
+                    lineno=ctor_lineno, 
+                    doc=ctor_doc
+                )
+            )
 
         for method in METHOD_RE.finditer(class_block):
             method_name = method.group(1)
             method_abs_start = open_brace_idx + method.start()
             method_lineno = src.count('\n', 0, method_abs_start) + 1
             method_doc = _collect_xml_doc(lines, method_lineno - 1)
+            method_decorators = _collect_decorators(lines, method_lineno - 1)
 
-            cls_info.methods.append(FunctionInfo(name=method_name, lineno=method_lineno, doc=method_doc))
+            cls_info.methods.append(
+                FunctionInfo(
+                    name=method_name,
+                    lineno=method_lineno,
+                    doc=method_doc,
+                    decorators=method_decorators
+                )
+            )
 
         for attr in ATTRIBUTE_RE.finditer(class_block):
             attr_name = attr.group(1)
@@ -147,7 +162,13 @@ def analyze_csharp(path: Path) -> ModuleInfo:
             attr_lineno = src.count('\n', 0, attr_abs_start) + 1
             attr_doc = _collect_xml_doc(lines, attr_lineno - 1)
 
-            cls_info.attributes.append(AttributeInfo(name=attr_name, lineno=attr_lineno, doc=attr_doc))
+            cls_info.attributes.append(
+                AttributeInfo(
+                    name=attr_name, 
+                    lineno=attr_lineno, 
+                    doc=attr_doc
+                )
+            )
 
         classes.append(cls_info)
 
@@ -188,27 +209,27 @@ def _collect_xml_doc(lines: List[str], start_idx: int) -> Optional[str]:
         Optional[str]:
             Processed and cleaned text from the documentation, or None if there is no associated documentation.
     """
-    i = start_idx - 1
+    idx = start_idx - 1
     buf: List[str] = []
 
     # We move upward collecting lines ///
-    while i >= 0:
-        s = lines[i].rstrip()
+    while idx >= 0:
+        txt = lines[idx].rstrip()
 
         # XML format
-        if s.strip().startswith('///'):
-            buf.append(s.strip().lstrip('/').strip())
-            i -= 1
+        if txt.strip().startswith('///'):
+            buf.append(txt.strip().lstrip('/').strip())
+            idx -= 1
             continue
 
         # Empty lines
-        if s.strip() == '':
-            i -= 1
+        if txt.strip() == '':
+            idx -= 1
             continue
 
         # C# attributes
-        if s.strip().startswith('[') and s.strip().endswith(']'):
-            i -= 1
+        if txt.strip().startswith('[') and txt.strip().endswith(']'):
+            idx -= 1
             continue
 
         break
@@ -338,6 +359,44 @@ def _xml_node_to_text(node: ET.Element) -> str:
             parts.append(child.tail.strip())
 
     return ' '.join(parts)
+
+def _collect_decorators(lines: List[str], start_idx: int) -> List[str]:
+    """
+    Extracts C#-style decorators (attributes) applied to a class, method, constructor or field.
+
+    The algorithm ascends from `start_idx`, collecting all immediately preceding documentation,
+    sorting it, and then parsing it as valid XML.
+
+    Args:
+        lines (List[str]):
+            The file content split into lines.
+        start_idx (int):
+            The 1-based index of the declaration line.
+
+    Returns:
+        List[str]:
+            List with all decorators found.
+    """
+    attrs = []
+    idx = start_idx - 1
+
+    while idx >= 0:
+        txt = lines[idx].rstrip()
+
+        if txt.strip().startswith('[') and txt.strip().endswith(']'):
+            attrs.append(txt.strip())
+            idx -= 1
+            continue
+
+        if txt.strip().startswith('///'):
+            idx -= 1
+            continue
+
+        break
+
+    attrs.reverse()
+
+    return attrs
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

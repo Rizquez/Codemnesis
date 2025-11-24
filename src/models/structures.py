@@ -26,10 +26,13 @@ class FunctionInfo:
             Line number where it is defined within the source file.
         doc (str, optional):
             Docstring associated with the function, if it exists; otherwise, None.
+        decorators (List[str]):
+            List of decorators found in the function.
     """
     name: str
     lineno: int
     doc: Optional[str]
+    decorators: List[str] = field(default_factory=list)
 
 @dataclass
 class AttributeInfo:
@@ -64,12 +67,15 @@ class ClassInfo:
             List of methods defined within the class, represented by `FunctionInfo` objects.
         attributes (List[AttributeInfo]):
             List of attributes found in the module classes, represented by `AttributeInfo` objects.
+        decorators (List[str]):
+            List of decorators found in the class.
     """
     name: str
     lineno: int
     doc: Optional[str]
     methods: List[FunctionInfo] = field(default_factory=list)
     attributes: List[AttributeInfo] = field(default_factory=list)
+    decorators: List[str] = field(default_factory=list)
 
 @dataclass
 class ModuleInfo:
