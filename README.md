@@ -41,14 +41,14 @@ Technical documentation often lags behind the pace of development, creating thre
 > [!NOTE]
 > The README file is generated from the existing documentation in the code.
 
-<!-- ### MVP (Second phase)
+### Second phase
 
 - Minimum metrics on the files.
 - Dependency map (import between modules).
 - Templates with Jinja2 for report generation.
 
 > [!IMPORTANT]
-> This phase is currently under development. -->
+> This phase is currently under development.
 
 ## 💽 Installation (Windows)
 
