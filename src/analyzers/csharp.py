@@ -9,6 +9,7 @@ import logging, re, xml.etree.ElementTree as ET
 # ---------------------------------------------------------------------------------------------------------------------
 from src.models.structures import *
 from settings.constants import ALGORITHM
+from src.utils.metrics import module_metrics
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
@@ -45,6 +46,9 @@ ATTRIBUTE_RE = re.compile(
     r'(?:{[^}]*}|=>|=|;)',
     re.MULTILINE
 )
+
+# Regular expression to detect using
+USING_RE = re.compile(r'^\s*using\s+([A-Za-z0-9_.]+)\s*;', re.MULTILINE)
 
 def analyze_csharp(path: Path) -> ModuleInfo:
     """
@@ -120,7 +124,8 @@ def analyze_csharp(path: Path) -> ModuleInfo:
                     idx_end = idx
                     break
             else:
-                logger.warning() # TODO
+                pass
+            
             idx += 1
 
         # Regular expression to detect constructor methods
@@ -182,7 +187,9 @@ def analyze_csharp(path: Path) -> ModuleInfo:
         path=str(path),
         doc=None,           # C# does not have module docstrings
         functions=[],       # In C#, there are no typical top-level functions, it is left empty
-        classes=classes
+        classes=classes,
+        imports=_collect_usings(src),
+        metrics=module_metrics(src, classes, [])
     )
 
 def _collect_xml_doc(lines: List[str], start_idx: int) -> Optional[str]:
@@ -195,11 +202,11 @@ def _collect_xml_doc(lines: List[str], start_idx: int) -> Optional[str]:
     sorting it, and then parsing it as valid XML.
 
     **The function:**
-        - Detects <summary>
-        - Detects <param name="x">
-        - Detects <returns>
-        - Detects <exception cref="X">
-        - Converts <see cref="X"/> nodes to plain text (X)
+        - Detects `<summary>`
+        - Detects `<param name="x">`
+        - Detects `<returns>`
+        - Detects `<exception cref="X">`
+        - Converts `<see cref="X"/>` nodes to plain text (X)
         - Generates a structured block of readable text
 
     If the block is not valid XML or does not contain relevant tags, it is returned as is.
@@ -405,6 +412,24 @@ def _collect_decorators(lines: List[str], start_idx: int) -> List[str]:
     attrs.reverse()
 
     return attrs
+
+def _collect_usings(src: str) -> List[str]:
+    """
+    Extracts all `using` statements present in a C# file.
+
+    This function analyzes the entire contents of the source file (`src`) 
+    and uses the regular expression `USING_RE` to locate all statements of 
+    the type: `using System.Text`.
+
+    Args:
+        src(str):
+            Complete contents of the C# file in text format.
+
+    Returns:
+        List[str]:
+            Ordered list, without duplicates, of all namespaces imported using `using` statements.
+    """
+    return sorted({using.group(1) for using in USING_RE.finditer(src)})
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

@@ -7,8 +7,9 @@ from typing import List, Tuple, Optional
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from src.models.structures import *
 from settings.constants import ALGORITHM
-from src.models.structures import FunctionInfo, ClassInfo, ModuleInfo, AttributeInfo
+from src.utils.metrics import module_metrics
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
@@ -126,7 +127,9 @@ def analyze_python(path: Path) -> ModuleInfo:
         path=str(path),
         doc=doc,
         functions=funcs,
-        classes=classes
+        classes=classes,
+        imports=_collect_imports(tree),
+        metrics=module_metrics(src, classes, funcs)
     )
 
 def _normalize_document(doc: Optional[str]) -> Optional[str]:
@@ -307,6 +310,36 @@ def _collect_decorators(node: ast.AST, src: str) -> List[str]:
         decorators.append(text.lstrip('@').strip())
 
     return decorators
+
+def _collect_imports(tree: ast.AST) -> List[str]:
+    """
+    Extracts all imports present in a Python module from its AST.
+
+    Args:
+        tree (ast.AST):
+            The syntax tree of the file obtained using `ast.parse()`.
+
+    Returns:
+        List[str]:
+            A single, ordered list containing all imported modules within the file.
+    """
+    imports: List[str] = []
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                imports.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            module = node.module or ''
+            for alias in node.names:
+                if module:
+                    imports.append(f'{module}.{alias.name}')
+                else:
+                    imports.append(alias.name)
+        else:
+            pass
+
+    return sorted(set(imports))
 
 def _fix_bullets(doc: Optional[str]) -> Optional[str]:
     """

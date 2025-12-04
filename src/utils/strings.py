@@ -19,7 +19,7 @@ class DocStrings:
     """
     
     @classmethod
-    def to_readme(cls, doc: str, *, tabulation: bool = False, cleaned: Optional[List[str]]) -> str:
+    def to_readme(cls, doc: str, *, cleaned: Optional[List[str]]) -> str:
         """
         Applies the full format to the received text (docstring) by combining 
         the tabulation and cleanup steps.
@@ -30,8 +30,6 @@ class DocStrings:
         Args:
             doc (str):
                 Original text of the docstring to be formatted.
-            tabulation (bool): 
-                If True, adds "\\t" to the beginning of each line.
             cleaned (List[str], optional): 
                 List of tokens to be removed using replace.
 
@@ -45,9 +43,6 @@ class DocStrings:
             ValueError:
                 If `cleaned` is not provided.
         """
-        if tabulation:
-            doc = cls.tabulation(doc)
-
         if cleaned:
             if not isinstance(cleaned, list):
                 raise TypeError('The `cleaned` parameter must be a list of strings')
@@ -57,24 +52,7 @@ class DocStrings:
             raise ValueError('If `clean` is True, you must provide a list in `cleaned` and the other way aroung')
 
         return doc
-    
-    @classmethod
-    def tabulation(cls, doc: str) -> str:
-        """
-        Adds a tab (`\\t`) at the beginning of each line of the received text.
 
-        Args:
-            doc (str):
-                Text or docstring to be tabulated.
-
-        Returns:
-            str:
-                Text with a tab applied at the beginning of each line.
-        """
-        lines = cls.__get_lines(doc)
-
-        return '\n'.join(f'\t{line.strip()}' for line in lines)
-    
     @classmethod
     def __clean(cls, doc: str, cleaned: List[str]) -> str:
         """

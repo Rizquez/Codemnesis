@@ -65,6 +65,12 @@ class Console:
             help="Additional files/extensions to exclude from the scan, separated by commas if multiple are specified"
         )
 
+        parser.add_argument(
+            '--report',
+            action='store_true',
+            help="Request the creation of a report with the metrics information"
+        )
+
         args = parser.parse_args()
 
         cls.__validate(args, parser)

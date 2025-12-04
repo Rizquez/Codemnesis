@@ -44,6 +44,7 @@ class Settings:
     def __init__(self, args: 'Namespace') -> None:
         self.__framework: str = args.framework
         self.__repository: str = args.repository
+        self.__report: str = args.report
         self.__excluded: Set[str] = self.__set_excluded(args.excluded)
         self.__included: Set[str] = EXTENSIONS.get(self.__framework.lower(), set())
 
@@ -59,6 +60,10 @@ class Settings:
     @property
     def repository(self) -> str:
         return self.__repository
+    
+    @property
+    def report(self) -> str:
+        return self.__report
     
     @property
     def excluded(self) -> Set[str]:

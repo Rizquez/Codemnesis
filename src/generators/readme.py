@@ -59,6 +59,14 @@ class Readme:
             relative = Path(module.path).resolve().relative_to(Path(directory).resolve())
             lines.append(f'## 🗂️ Module: `{relative.as_posix()}`\n')
 
+            if module.metrics:
+                lines.append('### 📊 Basic module metrics')
+                lines.append(f'- Total classes: {module.metrics.n_classes}')
+                lines.append(f'- Total methods: {module.metrics.n_methods}')
+                lines.append(f'- Total functions: {module.metrics.n_functions}')
+                lines.append(f'- Total lines of the module: {module.metrics.loc}')
+                lines.append(f'- Total useful lines of the module: {module.metrics.sloc}\n')
+
             if not module.classes and not module.functions:
                 lines.append(f'*{NO_MODULE}*\n')
             else:

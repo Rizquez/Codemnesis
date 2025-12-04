@@ -1,7 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-import os
-import logging
+import os, logging
 from typing import TYPE_CHECKING
 from logging.handlers import RotatingFileHandler
 

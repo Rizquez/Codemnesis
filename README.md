@@ -1,4 +1,4 @@
-# 🤖 AutoDocMind - v.0.7.0
+# 🤖 AutoDocMind - v.0.8.0
 
 ## 🧾 Project description
 
@@ -89,7 +89,7 @@ pip install -r requirements.txt
 To run the application from the console, you can use the following command shown as an example:
 
 ```sh
-python main.py --framework=... --repository=... --output=... --excluded=...
+python main.py --framework=... --repository=... --output=... --excluded=... --report
 ```
 
 Where:
@@ -98,6 +98,7 @@ Where:
 - **repository:** Directory of the repository that hosts the project.
 - **output (optional):** Directory where the generated files will be saved. If not specified, the folder where the files are stored will be created in the *root of this project*.
 - **excluded (optional):** Additional files and extensions to exclude from the scan, separated by commas if multiple are specified.
+- **report (optional):** Request the creation of a report with the metrics information, it works such a True/False click.
 
 > [!NOTE]
 > For more details about the parameters and execution arguments, see the file located at: *handlers/console.py*
@@ -123,13 +124,16 @@ AutoDocMind/
 │   │   └── csharp.py
 │   ├── generators
 │   │   ├── __init__.py
-│   │   └── readme.py
+│   │   ├── readme.py
+│   │   └── report.py
 │   ├── models
 │   │   └── structures.py
 │   ├── utils
 │   │   ├── scan.py
 │   │   └── strings.py
 │   └── execute.py
+├── support
+│   └── base.docx
 ├── .gitignore
 ├── LICENSE
 ├── main.py

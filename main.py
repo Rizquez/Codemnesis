@@ -1,8 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-import time
-import psutil
-import logging
+import time, psutil, logging
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -39,7 +37,7 @@ if __name__ == '__main__':
     after = psutil.virtual_memory().used
 
     logger.info(f"Total execution time: {round(end - start, 3)} seconds")
-
+    
     logger.info(f"Total memory consumed: {round((after - before) / pow(1024, 2), 2)} megabytes")
 
     ManageLogger.close_logger(logger)
