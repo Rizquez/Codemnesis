@@ -1,4 +1,4 @@
-# 🤖 AutoDocMind - v.0.8.0
+# 🤖 AutoDocMind - v.0.9.0
 
 ## 🧾 Project description
 
@@ -130,11 +130,14 @@ AutoDocMind/
 │   │   ├── __init__.py
 │   │   ├── entities.py
 │   │   └── module.py
-│   ├── utils
+│   ├── tools
 │   │   ├── docstrings.py
 │   │   ├── fixers.py
-│   │   ├── metrics.py
 │   │   └── scan.py
+│   ├── utils
+│   │   ├── graphics.py
+│   │   ├── maps.py
+│   │   └── metrics.py
 │   └── execute.py
 ├── support
 │   └── base.docx

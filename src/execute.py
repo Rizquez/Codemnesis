@@ -1,18 +1,19 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 import sys, traceback, logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.analyzers import *
 from src.generators import *
-from src.utils.scan import scanner
+from src.tools.scan import scanner
 from helpers.trace import error_trace
 from settings.constants import ALGORITHM
 
 if TYPE_CHECKING:
+    from src.models import ModuleInfo
     from settings.algorithm import Settings
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +43,7 @@ def execute(settings: 'Settings') -> None:
     
     method = globals().get(f'analyze_{settings.framework}')
 
-    modules = []
+    modules: List['ModuleInfo'] = []
     for file in files:
         try:
             modules.append(method(file))
@@ -56,10 +57,9 @@ def execute(settings: 'Settings') -> None:
     target = write_readme(txt, settings.output)
     logger.info(f"README generated: {target}")
 
-    """ if settings.graph:
-        logger.info("Generating dependency graph ...")
-        path = generate_graph(modules, settings.output, settings.repository)
-        logger.info(f"Dependency graph generated: {path}") """
+    logger.info("Generating dependency graph ...")
+    path = generate_graph(modules, settings.output, settings.repository, settings.framework)
+    logger.info(f"Dependency graph generated: {path}")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

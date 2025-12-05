@@ -90,9 +90,8 @@ class Console:
         if not os.path.exists(args.repository):
             parser.error("The parameter sent in `--repository` must be a valid directory!")
 
-        if args.output:
-            if not os.path.exists(args.output):
-                parser.error("The parameter sent in `--output` must be a valid directory!")
+        if args.output and not os.path.exists(args.output):
+            parser.error("The parameter sent in `--output` must be a valid directory!")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

@@ -15,13 +15,13 @@ from typing import Set, Iterator
 
 __all__ = ['scanner']
 
-def scanner(directory: str, included: Set[str], excluded: Set[str]) -> Iterator[Path]:
+def scanner(repository: str, included: Set[str], excluded: Set[str]) -> Iterator[Path]:
     """
     Recursively traverse a directory and generate the paths of files that match the specified extensions, 
     excluding unwanted folders.
 
     Args:
-        directory (str):
+        repository (str):
             Base path of the repository or project to be analyzed.
         included (Set[str]):
             Set of file extensions to include in the scan.
@@ -32,7 +32,7 @@ def scanner(directory: str, included: Set[str], excluded: Set[str]) -> Iterator[
         Path:
             Absolute path of each file that meets the defined criteria.
     """
-    root = Path(directory).resolve()
+    root = Path(repository).resolve()
 
     for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
         dirnames[:] = [d for d in dirnames if d not in excluded]

@@ -392,7 +392,7 @@ def _collect_decorators(lines: List[str], start_idx: int) -> List[str]:
         List[str]:
             List with all decorators found.
     """
-    attrs = []
+    attrs: List[str] = []
     idx = start_idx - 1
 
     while idx >= 0:

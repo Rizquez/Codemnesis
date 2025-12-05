@@ -1,6 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from typing import Optional
+from typing import Optional, List
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -32,7 +32,7 @@ def fix_bullets(txt: Optional[str]) -> Optional[str]:
         return txt
 
     lines = txt.splitlines()
-    fixed = []
+    fixed: List[str] = []
 
     for line in lines:
         stripped = line.lstrip()

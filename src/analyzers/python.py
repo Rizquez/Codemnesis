@@ -8,7 +8,7 @@ from typing import List, Tuple, Optional
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.models import *
-from src.utils.fixers import *
+from src.tools.fixers import *
 from settings.constants import ALGORITHM
 from src.utils.metrics import module_metrics
 # ---------------------------------------------------------------------------------------------------------------------

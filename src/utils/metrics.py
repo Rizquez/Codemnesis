@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
+__all__ = ['module_metrics']
+
 def module_metrics(src: str, classes: List['ClassInfo'], funcs: List['FunctionInfo']) -> ModuleMetrics:
     """
     Calculate basic module metrics from the source content and the previously analyzed structure.
