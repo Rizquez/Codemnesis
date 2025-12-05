@@ -21,15 +21,13 @@ class ModuleMetrics:
 
     Attributes:
         loc (int):
-            Total number of lines in the file (Lines of Code), 
-            including comments, blank lines, and code.
+            Total number of lines in the file, including comments, blank lines, and code.
         sloc (int):
-            Number of "meaningful" lines in the file (Source Lines of Code), 
-            excluding comments and blank lines.
+            Number of meaningful lines in the file, excluding comments and blank lines.
         n_classes (int):
             Total number of classes detected in the module.
         n_functions (int):
-            Number of functions defined at the module level (excluding methods within classes).
+            Number of functions defined at the module level.
         n_methods (int):
             Total number of methods defined within all classes of the module.
     """

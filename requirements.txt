@@ -1,1 +1,2 @@
+graphviz==0.21
 psutil==7.1.2

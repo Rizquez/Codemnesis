@@ -8,6 +8,7 @@ from typing import List, Tuple, Optional
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.models import *
+from src.utils.fixers import *
 from settings.constants import ALGORITHM
 from src.utils.metrics import module_metrics
 # ---------------------------------------------------------------------------------------------------------------------
@@ -147,7 +148,7 @@ def _normalize_document(doc: Optional[str]) -> Optional[str]:
     **And apply a uniform format using:**
         - "*Args:*", "*Returns:*" and "*Raises:*"
         - Bullets with `- name: description`
-        - Clean up asterisks and normalize bullets using `_fix_bullets` and `_fix_asterisk`.
+        - Clean up asterisks and normalize bullets using `fix_bullets` and `fix_asterisk`.
 
     **Additionally:**
         - Supports multiline descriptions.
@@ -267,8 +268,8 @@ def _normalize_document(doc: Optional[str]) -> Optional[str]:
 
             continue
 
-        line_fixed = _fix_bullets(line)
-        line_fixed = _fix_asterisk(line_fixed)
+        line_fixed = fix_bullets(line)
+        line_fixed = fix_asterisk(line_fixed)
 
         out.append(line_fixed)
 
@@ -340,59 +341,6 @@ def _collect_imports(tree: ast.AST) -> List[str]:
             pass
 
     return sorted(set(imports))
-
-def _fix_bullets(doc: Optional[str]) -> Optional[str]:
-    """
-    Normalizes bullets in multiline text.
-
-    This method detects lines that begin with `-` or `*` and unifies them, 
-    converting them into standard hyphenated bullets (`-`). It is used to 
-    clean up docstrings and ensure consistent formatting in Markdown.
-
-    Args:
-        doc(str | None):
-            Original text to process. Can contain one or more lines.
-
-    Returns:
-        (str | None):
-            The text with normalized bullets, or the original value if `doc` is None.
-    """
-    if not doc:
-        return doc
-
-    lines = doc.splitlines()
-    fixed = []
-
-    for line in lines:
-        stripped = line.lstrip()
-
-        if stripped.startswith('- ') or stripped.startswith('* '):
-            fixed.append(f'- {stripped[2:].strip()}')
-        else:
-            fixed.append(line)
-
-    return '\n'.join(fixed)
-
-def _fix_asterisk(doc: Optional[str]) -> Optional[str]:
-    """
-    Removes all asterisks from the text.
-
-    Used to clean up docstrings from formats that use `*` 
-    as part of the markup and that should not appear in 
-    the final Markdown.
-
-    Args:
-        doc(str | None):
-            Original text that may contain asterisks.
-
-    Returns:
-        (str | None):
-            Text without asterisks, or the original value if `doc` is None.
-    """
-    if not doc:
-        return doc
-    
-    return doc.replace('*', '')
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

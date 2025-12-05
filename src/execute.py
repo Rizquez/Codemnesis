@@ -33,7 +33,8 @@ def execute(settings: 'Settings') -> None:
     **This function coordinates all stages of the AutoDocMind process:**
         1. Scans the specified repository for files in the supported language.
         2. Analyzes each file found to extract its structure (classes, functions, and docstrings).
-        3. Generates a `README` file with the consolidated documentation.
+        3. Generates a README file with the consolidated documentation.
+        4. Generates a visual dependency graph between modules.
     """
     logger.info(f"Scanning repository: {settings.repository}")
     files = list(scanner(settings.repository, settings.included, settings.excluded))
@@ -53,7 +54,12 @@ def execute(settings: 'Settings') -> None:
     logger.info(f"Generating README ...")
     txt = render_readme(modules, settings.repository)
     target = write_readme(txt, settings.output)
-    logger.info(f"Ready README: {target}")
+    logger.info(f"README generated: {target}")
+
+    """ if settings.graph:
+        logger.info("Generating dependency graph ...")
+        path = generate_graph(modules, settings.output, settings.repository)
+        logger.info(f"Dependency graph generated: {path}") """
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE
