@@ -8,3 +8,7 @@
 **/.notes/
 
 **/AutoDocMind-Output/
+
+~$*.docx
+~$*.doc
+~*.tmp
