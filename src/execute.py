@@ -10,11 +10,11 @@ from src.analyzers import *
 from src.generators import *
 from src.tools.scanner import scanner
 from helpers.traces import error_trace
-from configuration.constants import ALGORITHM
+from common.constants import ALGORITHM
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
-    from configuration.settings import Settings
+    from common.settings import Settings
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS

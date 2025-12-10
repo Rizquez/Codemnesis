@@ -7,7 +7,7 @@ from typing import List, TYPE_CHECKING
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.tools.docstring import format_docstring
-from configuration.constants import ALGORITHM_VERSION, NO_METHOD, NO_FUNCTION, NO_CLASS, NO_MODULE, NO_ATTRIBUTE
+from common.constants import ALGORITHM_VERSION, NO_METHOD, NO_FUNCTION, NO_CLASS, NO_MODULE, NO_ATTRIBUTE
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo

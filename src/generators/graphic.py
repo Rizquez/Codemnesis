@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, List, Dict, Set
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.utils.paths import dependencies_path
-from configuration.constants import ALGORITHM_VERSION
+from common.constants import ALGORITHM_VERSION
 from src.utils.maps import dependencies_map, identifiers_map
 
 if TYPE_CHECKING:

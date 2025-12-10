@@ -6,10 +6,10 @@ import time, psutil, logging
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.execute import execute
-from configuration.settings import Settings
+from common.settings import Settings
 from handlers.arguments import Arguments
 from handlers.logger import HandlersLogger
-from configuration.constants import ALGORITHM, ALGORITHM_VERSION
+from common.constants import ALGORITHM, ALGORITHM_VERSION
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS

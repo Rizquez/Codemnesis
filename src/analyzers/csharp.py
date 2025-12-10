@@ -8,8 +8,8 @@ import logging, re, xml.etree.ElementTree as ET
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.models import *
+from common.constants import ALGORITHM
 from src.utils.metrics import module_metrics
-from configuration.constants import ALGORITHM
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS

@@ -108,7 +108,7 @@ The main files are organized into:
 
 ```
 AutoDocMind/
-├── configuration
+├── common
 │   ├── constants.py
 │   └── settings.py
 ├── handlers

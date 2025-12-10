@@ -1,6 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from typing import NoReturn
+from docxtpl import DocxTemplate
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -11,8 +11,11 @@ from typing import NoReturn
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-def generate_report() -> NoReturn:
-    raise NotImplementedError()
+def generate_report(template: str):
+    """
+    
+    """
+    docx = DocxTemplate(template)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE
