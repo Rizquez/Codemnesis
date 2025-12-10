@@ -27,28 +27,20 @@ Technical documentation often lags behind the pace of development, creating thre
 - Prepare a **release** and validate documentation and dependencies.
 - Perform automated **technical reviews** to identify *magic* functions or poorly cohesive modules.
 
-> [!IMPORTANT]
-> Supported programming languages: Python and C#.
-
-## 🛠️ Key features (MVP)
-
-### First phase
+## 🛠️ Key features
 
 - Browse the repository filtering by a specific programming language.
-- Detection of documentation on classes, methods, decorators, and functions (depending on the language).
-- Generation of documentation in `README` file.
+- Detection of documentation on classes, methods, decorators, and functions.
+- Obtaining minimum metrics for each module based on the elements contained in the module.
 
-> [!NOTE]
-> The README file is generated from the existing documentation in the code.
+### Generated documents
 
-### Second phase
-
-- Minimum metrics on the files.
-- Dependency map (import between modules).
-- Templates with Jinja2 for report generation.
+- **Readme** file generated based on existing documentation in the repository code.
+- **Graph** associated with the map of import dependencies between modules.
+- **Report** with relevant information on common indicators and interpreted metrics.
 
 > [!IMPORTANT]
-> This phase is currently under development.
+> Supported programming languages: Python and C#.
 
 ## 💽 Installation (Windows)
 
@@ -119,8 +111,8 @@ AutoDocMind/
 ├── src
 │   ├── analyzers
 │   │   ├── __init__.py
-│   │   ├── python.py
-│   │   └── csharp.py
+│   │   ├── csharp.py
+│   │   └── python.py
 │   ├── generators
 │   │   ├── __init__.py
 │   │   ├── graphic.py
@@ -136,8 +128,8 @@ AutoDocMind/
 │   │   └── scanner.py
 │   ├── utils
 │   │   ├── maps.py
-│   │   ├── paths.py
-│   │   └── metrics.py
+│   │   ├── metrics.py
+│   │   └── paths.py
 │   └── execute.py
 ├── templates
 │   └── report.docx

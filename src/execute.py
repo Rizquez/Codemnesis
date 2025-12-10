@@ -61,5 +61,9 @@ def execute(settings: 'Settings') -> None:
     path = render_graphic(modules, settings.output, settings.repository, settings.framework)
     logger.info(f"Dependency graph generated: {path}")
 
+    logger.info("Generating report ...")
+    path = generate_report(settings.template, settings.output)
+    logger.info(f"Report generated: {path}")
+
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE
