@@ -23,11 +23,11 @@ __all__ = ['render_graphic']
 
 FILE = 'Graphic'
 
-CLUSTER_BG   = "#f5f5f5"
-NODE_FILL    = "#ffffff"
-NODE_BORDER  = "#aaaaaa"
-EDGE_INTRA   = "#444444"
-EDGE_INTER   = "#1f77b4"
+CLUSTER_BG = "#f5f5f5"
+NODE_FILL = "#ffffff"
+NODE_BORDER = "#aaaaaa"
+EDGE_INTRA = "#444444"
+EDGE_INTER = "#1f77b4"
 
 def render_graphic(
     modules: List['ModuleInfo'], 

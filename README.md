@@ -6,7 +6,7 @@
 
 Its goal is to save developers time by automatically creating files such as README, flowcharts, and explanations of each module, without relying on manual writing.
 
-It combines static code analysis with natural language processing to provide a comprehensive overview of the project, its dependencies, and its internal structure.
+Through static code analysis, it provides a comprehensive overview of the project, its dependencies, and its internal structure.
 
 ## 📑 Context
 
