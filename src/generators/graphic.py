@@ -1,15 +1,16 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-import re
 from pathlib import Path
-from collections import defaultdict
+from graphviz import Digraph
+from typing import List, Dict, Set
 from typing import TYPE_CHECKING, List, Dict, Set
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from src.utils.maps import dependencies_map
-from src.utils.graphics import map_to_graph
+from src.utils.paths import dependencies_path
+from configuration.constants import ALGORITHM_VERSION
+from src.utils.maps import dependencies_map, identifiers_map
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
@@ -21,6 +22,12 @@ if TYPE_CHECKING:
 __all__ = ['render_graphic']
 
 FILE = 'Graphic'
+
+CLUSTER_BG   = "#f5f5f5"
+NODE_FILL    = "#ffffff"
+NODE_BORDER  = "#aaaaaa"
+EDGE_INTRA   = "#444444"
+EDGE_INTER   = "#1f77b4"
 
 def render_graphic(
     modules: List['ModuleInfo'], 
@@ -53,9 +60,9 @@ def render_graphic(
         str:
             Absolute path of the generated output file.
     """
-    dep_map: Dict[str, Set] = _build_map(modules, repository, framework)
+    dep_map: Dict[str, Set] = dependencies_map(modules, repository, framework)
 
-    graph = map_to_graph(repository, dep_map, format)
+    graph = _map_to_graphic(repository, dep_map, format)
 
     out = Path(output) / f'{FILE}.{format}'
 
@@ -63,72 +70,127 @@ def render_graphic(
 
     return out
 
-def _build_map(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set]:
+def _map_to_graphic(repository: str, dep_map: Dict[str, Set[str]], format: str) -> Digraph:
     """
-    Build the dependency map between modules based on analysis information and the logical 
-    paths of the project.
+    Construct a repository dependency diagram using Graphviz.
+
+    Starting with a dependency map between modules, this function generates a directed graph where:
+        - Each node represents a module (file) in the repository.
+        - Nodes are grouped into clusters based on their parent folder.
+        - Each folder is drawn as a rectangle (cluster) with its name as the label.
+        - Edges indicate dependencies between modules.
+        - Edges within the same cluster use the color `EDGE_INTRA`.
+        - Edges between clusters use the color `EDGE_INTER`.
+        - An invisible `wrapper` cluster is created for each folder to increase the visual separation 
+        between groups of modules.
+
+    Additionally, a header is added with the algorithm version and the name of the analyzed repository.
 
     Args:
-        modules (List[ModuleInfo]):
-            List of `ModuleInfo` objects representing the analyzed modules in the repository.
         repository (str):
             Base path of the repository or project to be analyzed.
-        framework (str):
-            Name of the framework used, which must have a compatible mapping method.
+        dep_map(Dict[str, Set[str]]): 
+            Dictionary where each key is a module and its value is a set of modules on which 
+            it depends.
+        format (str): 
+            Output format supported by Graphviz.
 
     Returns:
-        Dict:
-            Dependency structure produced by the corresponding repository and framework.
+        Digraph: 
+            Graphviz object ready to be rendered in the specified format.
     """
-    paths = _paths(modules, repository, framework)
-
-    dep_map = dependencies_map(modules, paths)
-
-    return dep_map
-
-def _paths(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set[str]]:
-    """
-    Retrieves the logical module names along with their actual physical paths.
-
-    This method translates the full file paths in the repository to extensionless 
-    relative paths, and then converts these paths into a format fully compatible 
-    with the standard way of importing modules.
-
-    Args:
-        modules (List[ModuleInfo]):
-            List of `ModuleInfo` objects representing the analyzed modules in the repository.
-        repository (str):
-            Base path of the repository or project to be analyzed.
-        framework (str):
-            Name of the framework used, which must have a compatible mapping method.
-
-    Returns:
-        Dict:
-            Dictionary where each key is a logical identifier and each value is a set of file 
-            paths that implement it within the repository.
-
-    Raises:
-        ValueError:
-            When the framework does not have a registered compatible method.
-    """
-    dct = {}
-
-    root = Path(repository).resolve()
-
-    for module in modules:
-        if framework == 'csharp':
-            for imp in getattr(module, 'imports', []):
-                if imp.startswith('__ns__:'):
-                    ns = imp[len('__ns__:'):]
-                    dct.setdefault(ns, set()).add(module.path)
-        elif framework == 'python':
-            relative = Path(module.path).resolve().relative_to(root)
-            name = relative.with_suffix('').as_posix().replace('/', '.')
-            dct[name] = module.path
-        else:
-            raise ValueError(f"Check the execution parameters, the {framework} framework is not currently supported")
+    title = f'''
+    Dependency diagram generated by AutoDocMind - v.{ALGORITHM_VERSION}
+    \nRepository analyzed: {Path(repository).resolve().name}
+    '''
     
-    return dct
+    dot = Digraph(format=format)
+
+    dot.attr(
+        rankdir='LR',
+        splines='ortho',
+        concentrate='true',
+        label=title,
+        labelloc='t',
+        fontsize='62',
+        pad='1.5',
+        nodesep='1.5'
+    )
+
+    dot.attr(
+        'node',
+        shape='ellipse',
+        style='filled',
+        fillcolor=NODE_FILL,
+        color=NODE_BORDER,
+        fontsize='44'
+    )
+
+    all_path = dependencies_path(dep_map)
+
+    id_map = identifiers_map(all_path)
+
+    groups: Dict[str, List[str]] = {}
+    for path in all_path:
+        name = Path(path).parent.name or 'root'
+        groups.setdefault(name, []).append(path)
+
+    for name, paths in groups.items():
+        outer = Digraph(name=f'cluster_wrap_{name.lower()}')
+        outer.attr(
+            style='invis',
+            color='none',
+            peripheries='0'
+        )
+
+        inner = Digraph(name=f'cluster_{name.lower()}')
+        inner.attr(
+            label=name,
+            style='rounded,filled',
+            color=CLUSTER_BG,
+            fillcolor=CLUSTER_BG,
+            fontsize='48'
+        )
+
+        for path in paths:
+            inner.node(
+                id_map[path],
+                _short_label(path)
+            )
+
+        outer.subgraph(inner)
+        dot.subgraph(outer)
+
+    for src, targets in dep_map.items():
+        src_name = Path(src).parent.name or 'root'
+        src_id = id_map[src]
+
+        for dst in targets:
+            dst_name = Path(dst).parent.name or 'root'
+            dst_id = id_map[dst]
+
+            if src_name != dst_name:
+                dot.edge(src_id, dst_id, color=EDGE_INTRA)
+            else:
+                dot.edge(src_id, dst_id, color=EDGE_INTER)
+
+    return dot
+
+def _short_label(path: str) -> str:
+    """
+    Generates a short, readable label to represent a module in the diagram.
+
+    Given a full path, it returns only the filename without the extension.
+
+    Args:
+        path (str): 
+            Path or filename.
+
+    Returns:
+        str: 
+            Base filename without extension.
+    """
+    return Path(path).stem
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE
