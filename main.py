@@ -6,10 +6,10 @@ import time, psutil, logging
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.execute import execute
-from handlers.console import Console
-from settings.algorithm import Settings
-from helpers.loggers import ManageLogger
-from settings.constants import ALGORITHM, ALGORITHM_VERSION
+from configuration.settings import Settings
+from handlers.arguments import Arguments
+from handlers.logger import HandlersLogger
+from configuration.constants import ALGORITHM, ALGORITHM_VERSION
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
@@ -21,9 +21,9 @@ if __name__ == '__main__':
 
     before = psutil.virtual_memory().used
 
-    settings = Settings(Console.arguments())
+    settings = Settings(Arguments.get())
 
-    ManageLogger.algorithm(settings)
+    HandlersLogger.set(settings.output)
 
     logger = logging.getLogger(ALGORITHM)
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     
     logger.info(f"Total memory consumed: {round((after - before) / pow(1024, 2), 2)} megabytes")
 
-    ManageLogger.close_logger(logger)
+    HandlersLogger.close(logger)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

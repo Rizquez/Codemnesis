@@ -7,7 +7,7 @@ from typing import List, TYPE_CHECKING
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.tools.docstring import format_docstring
-from settings.constants import ALGORITHM_VERSION, NO_METHOD, NO_FUNCTION, NO_CLASS, NO_MODULE, NO_ATTRIBUTE
+from configuration.constants import ALGORITHM_VERSION, NO_METHOD, NO_FUNCTION, NO_CLASS, NO_MODULE, NO_ATTRIBUTE
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 __all__ = ['render_readme', 'write_readme']
 
-README_FILE = 'README.md'
+FILE = 'README.md'
 
 def render_readme(modules: List['ModuleInfo'], repository: str, *, cleaned: List[str] = ['`']) -> str:
     """
@@ -140,7 +140,7 @@ def write_readme(text: str, output: str) -> Path:
     out = Path(output)
     out.mkdir(parents=True, exist_ok=True)
 
-    target = out / README_FILE
+    target = out / FILE
 
     target.write_text(text, encoding='utf-8')
 

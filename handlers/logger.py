@@ -10,24 +10,19 @@ if TYPE_CHECKING:
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from settings.constants import ALGORITHM
-
-if TYPE_CHECKING:
-    from settings.algorithm import Settings
+from configuration.constants import ALGORITHM
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['ManageLogger']
+__all__ = ['HandlersLogger']
 
-LOGGER_FILE = 'logger'
+FILE = 'Events.log'
 
-class ManageLogger:
+class HandlersLogger:
     """
     Class responsible for managing the configuration of the logger used in the application.
-
-    This class centralizes the initialization and configuration of the logger for the `Algorithm` layer. 
 
     Its purpose is to ensure that each component of the application has a consistent and separate logging system.
 
@@ -37,7 +32,7 @@ class ManageLogger:
     """
 
     @classmethod
-    def algorithm(cls, settings: 'Settings') -> None:
+    def set(cls, output: str) -> None:
         """
         Configures the logger associated with the **Algorithm** layer.
 
@@ -45,14 +40,13 @@ class ManageLogger:
             - This method *creates the output directory* that will contain all generated files.
 
         Args:
-            settings (Settings):
-                Object containing the general settings for executing the algorithm.
+            output (str):
+                Path of the directory where the file will be stored. If it does not exist, 
+                it is created automatically.
         """
-        folder = settings.output
-        
-        os.makedirs(folder, exist_ok=True)
+        os.makedirs(output, exist_ok=True)
 
-        file = os.path.join(folder, f'{LOGGER_FILE}.log')
+        file = os.path.join(output, FILE)
 
         logger = logging.getLogger(ALGORITHM)
         if logger.handlers: 
@@ -65,7 +59,7 @@ class ManageLogger:
         logger.addHandler(cls.__stream_handler())
         
     @staticmethod
-    def close_logger(logger: 'Logger') -> None:
+    def close(logger: 'Logger') -> None:
         """
         Closes and removes all handlers associated with a specific logger.
 

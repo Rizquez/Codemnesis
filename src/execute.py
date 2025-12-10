@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, List
 # ---------------------------------------------------------------------------------------------------------------------
 from src.analyzers import *
 from src.generators import *
-from src.tools.scan import scanner
-from helpers.trace import error_trace
-from settings.constants import ALGORITHM
+from src.tools.scanner import scanner
+from helpers.traces import error_trace
+from configuration.constants import ALGORITHM
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
-    from settings.algorithm import Settings
+    from configuration.settings import Settings
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS

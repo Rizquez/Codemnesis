@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['Console']
+__all__ = ['Arguments']
 
-class Console:
+class Arguments:
     """
     Class responsible for managing and validating arguments received by the console.
 
@@ -30,7 +30,7 @@ class Console:
     """
 
     @classmethod
-    def arguments(cls) -> 'Namespace':
+    def get(cls) -> 'Namespace':
         """
         Defines, processes, and validates console arguments for algorithm execution.
 

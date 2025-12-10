@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['build_map']
+__all__ = ['dependencies_map']
 
-def build_map(modules: List['ModuleInfo'], paths: Dict[str, str]) -> Dict[str, Set]:
+def dependencies_map(modules: List['ModuleInfo'], paths: Dict[str, str]) -> Dict[str, Set]:
     """
     Builds the actual dependency map between repository modules.
 

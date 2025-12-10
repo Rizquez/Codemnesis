@@ -7,7 +7,7 @@ from typing import List, Dict, Set
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from settings.constants import ALGORITHM_VERSION
+from configuration.constants import ALGORITHM_VERSION
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS

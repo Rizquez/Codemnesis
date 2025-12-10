@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, List, Dict, Set
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from src.utils.maps import *
-from src.utils.graphics import *
+from src.utils.maps import dependencies_map
+from src.utils.graphics import map_to_graph
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 __all__ = ['generate_graph']
 
-GRAPH_FILE = 'Graph'
+FILE = 'Graphic'
 
 def generate_graph( modules: List['ModuleInfo'], output: str, repository: str, *, format: str = 'svg') -> str:
     """
@@ -30,7 +30,7 @@ def generate_graph( modules: List['ModuleInfo'], output: str, repository: str, *
 
     graph = map_to_graph(repository, dep_map, format)
 
-    out = Path(output) / f'{GRAPH_FILE}.{format}'
+    out = Path(output) / f'{FILE}.{format}'
 
     graph.render(out.with_suffix(''), cleanup=True)
 
@@ -40,7 +40,7 @@ def _build_map(modules: List['ModuleInfo'], repository: str) -> object:
     """
 
     """
-    return build_map(modules, _get_paths(modules, repository))
+    return dependencies_map(modules, _get_paths(modules, repository))
 
 def _get_paths(modules: List['ModuleInfo'], repository: str) -> Dict[str, str]:
     """

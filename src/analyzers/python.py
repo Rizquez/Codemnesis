@@ -8,9 +8,9 @@ from typing import List, Tuple, Optional
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.models import *
-from src.tools.fixers import *
-from settings.constants import ALGORITHM
 from src.utils.metrics import module_metrics
+from configuration.constants import ALGORITHM
+from src.tools.fixers import fix_asterisk, fix_bullets
 # ---------------------------------------------------------------------------------------------------------------------
 
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS

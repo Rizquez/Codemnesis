@@ -108,14 +108,14 @@ The main files are organized into:
 
 ```
 AutoDocMind/
+├── configuration
+│   ├── constants.py
+│   └── settings.py
 ├── handlers
-│   └── console.py
+│   ├── arguments.py
+│   └── logger.py
 ├── helpers
-│   ├── loggers.py
-│   └── trace.py
-├── settings
-│   ├── algorithm.py
-│   └── constants.py
+│   └── traces.py
 ├── src
 │   ├── analyzers
 │   │   ├── __init__.py
@@ -123,7 +123,7 @@ AutoDocMind/
 │   │   └── csharp.py
 │   ├── generators
 │   │   ├── __init__.py
-│   │   ├── graph.py
+│   │   ├── graphic.py
 │   │   ├── readme.py
 │   │   └── report.py
 │   ├── models
@@ -133,7 +133,7 @@ AutoDocMind/
 │   ├── tools
 │   │   ├── docstrings.py
 │   │   ├── fixers.py
-│   │   └── scan.py
+│   │   └── scanner.py
 │   ├── utils
 │   │   ├── graphics.py
 │   │   ├── maps.py

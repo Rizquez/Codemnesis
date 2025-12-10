@@ -60,7 +60,7 @@ def _clean(doc: str, cleaned: List[str]) -> str:
         str:
             Text without special characters or formatting symbols.
     """
-    lines = _get_lines(doc)
+    lines = _lines(doc)
     
     out: List[str] = []
     for line in lines:
@@ -71,7 +71,7 @@ def _clean(doc: str, cleaned: List[str]) -> str:
     
     return '\n'.join(out)
 
-def _get_lines(doc: str) -> List[str]:
+def _lines(doc: str) -> List[str]:
     """
     Converts the text of the docstring into a list of processable lines.
 
