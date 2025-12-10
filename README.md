@@ -92,7 +92,7 @@ Where:
 - **excluded (optional):** Additional files and extensions to exclude from the scan, separated by commas if multiple are specified.
 
 > [!NOTE]
-> For more details about the parameters and execution arguments, see the file located at: *handlers/console.py*
+> For more details about the parameters and execution arguments, see the file located at: *handlers/arguments.py*
 
 ## 📂 Estructura del proyecto
 
@@ -188,7 +188,8 @@ print(m._Motor__status)    # ✔️ Access possible, but not recommended (Output
 
 ## 📖 Additional documentation
 
-...
+- [Graphviz](https://graphviz.org/)
+- [Jinja2](https://jinja.palletsprojects.com/en/stable/)
 
 ## 🔒 License
 
