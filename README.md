@@ -94,7 +94,7 @@ Where:
 > [!NOTE]
 > For more details about the parameters and execution arguments, see the file located at: *handlers/arguments.py*
 
-## 📂 Estructura del proyecto
+## 📂 Project structure
 
 The main files are organized into:
 
