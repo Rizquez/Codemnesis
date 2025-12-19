@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 __all__ = ['Settings']
 
-FOLDER = 'AutoDocMind-Output'
+FOLDER = 'Codemnesis-Output'
 
 EXTENSIONS = {
     'python': {'.py'},

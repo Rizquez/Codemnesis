@@ -1,8 +1,8 @@
-# 🤖 AutoDocMind - v.0.14.0
+# 🤖 Codemnesis - v.0.14.0
 
 ## 🧾 Project description
 
-**AutoDocMind** is a tool that automatically analyzes code repositories to generate clear and useful documentation.
+**Codemnesis** is a tool that automatically analyzes code repositories to generate clear and useful documentation.
 
 Its goal is to save developers time by automatically creating files such as README, flowcharts, and explanations of each module, without relying on manual writing.
 
@@ -12,7 +12,7 @@ Through static code analysis, it provides a comprehensive overview of the projec
 
 Technical documentation often lags behind the pace of development, creating three common problems: **steep learning curves**, **scattered knowledge** and **costly maintenance**. Manually updating READMEs, diagrams, and docstrings does not scale and ends up out of sync with the code.
 
-**AutoDocMind** was created to automate this *invisible work*: it analyzes a repository and generates **explanatory documentation** directly from the code, describing flows, dependencies, responsibilities, and possible improvements.
+**Codemnesis** was created to automate this *invisible work*: it analyzes a repository and generates **explanatory documentation** directly from the code, describing flows, dependencies, responsibilities, and possible improvements.
 
 ### Who is it useful for?
 
@@ -46,12 +46,12 @@ Technical documentation often lags behind the pace of development, creating thre
 
 Clone this repository (ssh):
 ```sh
-git clone git@github.com:Rizquez/AutoDocMind.git
+git clone git@github.com:Rizquez/Codemnesis.git
 ```
 
 Access the project directory:
 ```sh
-cd AutoDocMind
+cd Codemnesis
 ```
 
 Create a development environment using the **virtualenv** library:
@@ -99,7 +99,7 @@ Where:
 The main files are organized into:
 
 ```
-AutoDocMind/
+Codemnesis/
 ├── common
 │   ├── constants.py
 │   └── settings.py
