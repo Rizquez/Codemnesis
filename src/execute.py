@@ -31,7 +31,7 @@ def execute(settings: 'Settings') -> None:
     """
     Executes the main flow of automatic documentation generation for the project.
 
-    **This function coordinates all stages of the AutoDocMind process:**
+    **This function coordinates all stages of the Codemnesis process:**
         1. Scans the specified repository for files in the supported language.
         2. Analyzes each file found to extract its structure (classes, functions, and docstrings).
         3. Generates a README file with the consolidated documentation.
