@@ -181,7 +181,7 @@ class Engine:
 m = Engine()
 print(m.status)            # ✔️ Output: on
 print(m.__status)          # ❌ Error: AttributeError
-print(m._Motor__status)    # ✔️ Access possible, but not recommended (Output: on)
+print(m._Engine__status)    # ✔️ Access possible, but not recommended (Output: on)
 ```
 > [!WARNING]
 > Although technically accessible via the mangled name, its direct use is discouraged outside the context of the class itself.
