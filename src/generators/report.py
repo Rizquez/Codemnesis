@@ -4,15 +4,15 @@ import os
 from pathlib import Path
 from datetime import datetime
 from docxtpl import DocxTemplate
-from typing import TYPE_CHECKING, List, Dict, Union, Set
+from typing import List, Dict, Union, Set, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from src.utils.maps import dependencies_map
+from src.tools.nums import percentage, average
 from common.constants import ALGORITHM_VERSION
 from src.utils.metrics import repository_metrics
-from src.tools.nums import percentage, percentage_as_num, average
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
@@ -48,10 +48,6 @@ def generate_report(template: str, output: str, repository: str, framework: str,
     Returns:
         str:
             Path of the generated DOCX file.
-
-    ## TODO
-    - Clean row empty on tables.
-    - Delete spaces amoung the bullets.
     """
     docx = DocxTemplate(template)
 
@@ -146,8 +142,36 @@ def _summary(
     hotspots: List[Dict[str, Union[str, int]]]
 ) -> Dict[str, Union[str, List[str]]]:
     """
-    ## TODO
-    - Documentar
+    Generates the executive summary block of the report.
+
+    Based on the repository's global metrics (SLOC and documentation coverage) and signals such as 
+    the presence of *hotspots*, it builds a dictionary ready to be injected into the DOCX template.
+
+    **Notes:**
+        - Average coverage is calculated as the average of classes, methods, and attributes.
+        - The thresholds used are heuristic for classifying coverage as high/moderate/low.
+
+    Args:
+        sloc (int):
+            Number of meaningful lines in the file, excluding comments and blank lines.
+        framework (str):
+            Name of the framework used, which must have a compatible mapping method.
+        repo_name (str):
+            Name of the repository/project.
+        class_percent (Union[float, int]):
+            Percentage of documented classes out of the total.
+        method_percent (Union[float, int]):
+            Percentage of documented methods out of the total.
+        attribute_percent (Union[float, int]):
+            Percentage of documented attributes out of the total.
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+        hotspots (List[Dict[str, Union[str, int]]]):
+            List of modules considered *hotspots* (by size, complexity, or low documentation).
+
+    Returns:
+        Dict:
+            Dictionary with keys expected by the template.
     """
     key_points = []
 
@@ -184,8 +208,24 @@ def _summary(
 
 def _global_stats(loc: int, sloc: int, framework: str, modules: List['ModuleInfo']) -> Dict[str, Union[str, int]]:
     """
-    ## TODO
-    - Documentar
+    Build basic global statistics for the report.
+
+    Generate a dictionary with high-level information: main language/framework, number of files analyzed, 
+    and LOC/SLOC totals. The returned format is designed to be inserted directly into the DOCX template.
+
+    Args:
+        loc (int):
+            Total number of lines in the file, including comments, blank lines, and code.
+        sloc (int):
+            Number of meaningful lines in the file, excluding comments and blank lines.
+        framework (str):
+            Name of the framework used, which must have a compatible mapping method.
+        modules (List[ModuleInfo]):
+            List of `ModuleInfo` objects representing the analyzed modules in the repository.
+
+    Returns:
+        Dict:
+            Dictionary with keys expected by the template.
     """
     return {
         'languages': f"{framework.capitalize()}.",
@@ -196,8 +236,26 @@ def _global_stats(loc: int, sloc: int, framework: str, modules: List['ModuleInfo
 
 def _hotspots(sloc: int, module_stats: List[Dict[str, Union[str, int]]]) -> List[Dict[str, Union[str, int]]]:
     """
-    ## TODO
-    - Documentar
+    Identify hotspot modules based on size, approximate complexity, and documentation.
+
+    A hotspot is a module that is a candidate for priority review for one or more reasons:
+        - It contributes a significant percentage of the total SLOC (>= 10% or >= 20%).
+        - It has many methods (>= 15), which may indicate high complexity.
+        - It has low documentation coverage (<= 50%) considering items (classes+methods+attributes).
+
+    **Notes:**
+        - If `sloc` is 0, percentages cannot be calculated and an empty list is returned.
+        - Thresholds are heuristic and can be adjusted according to the context of the project.
+
+    Args:
+        sloc (int):
+            Number of meaningful lines in the file, excluding comments and blank lines.
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+
+    Returns:
+        List:
+            List of candidates ranked from most to least relevant.
     """
     if not sloc:
         return []
@@ -245,8 +303,32 @@ def _hotspots(sloc: int, module_stats: List[Dict[str, Union[str, int]]]) -> List
 
 def _complexity_notes(sloc: int, module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 10) -> List[str]:
     """
-    ## TODO
-    - Documentar
+    Generates interpretive notes on complexity based on simple metrics.
+
+    Produces natural language phrases that help contextualize the analysis:
+        - Average size per module (SLOC).
+        - Average number of methods per module.
+        - Detection of very large modules by absolute size (heuristic).
+        - Concentration of SLOC in the top 20% of modules.
+        - Modules with many methods (possible God modules/objects).
+
+    **Notes:**
+        - Default thresholds used:
+            - `LARGE_SLOC = 1000` for large module.
+            - `MANY_METHODS = 30` for many methods.
+        - If there is no `sloc` or `module_stats` is empty, an empty list is returned.
+
+    Args:
+        sloc (int):
+            Number of meaningful lines in the file, excluding comments and blank lines.
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+        limit (int, optional):
+            Maximum number of grades returned.
+
+    Returns:
+        List:
+            List of notes (phrases) with complexity observations, truncated to `limit`.
     """
     notes = []
 
@@ -326,8 +408,22 @@ def _doc_coverage(
     attribute_percent: Union[float, int]
 ) -> Dict[str, str]:
     """
-    ## TODO
-    - Documentar
+    Format the documentation coverage for the report.
+
+    Convert the numerical percentages of documentation (classes/methods/attributes) into strings with 
+    the percent symbol and period, as is usually required by a DOCX template.
+
+    Args:
+        class_percent (Union[float, int]):
+            Percentage of documented classes out of the total.
+        method_percent (Union[float, int]):
+            Percentage of documented methods out of the total.
+        attribute_percent (Union[float, int]):
+            Percentage of documented attributes out of the total.
+
+    Returns:
+        Dict:
+            Dictionary with keys expected by the template.
     """
     return {
         'class_percent': f"{class_percent}\u0025.",
@@ -337,8 +433,23 @@ def _doc_coverage(
 
 def _best_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 5) -> List[str]:
     """
-    ## TODO
-    - Documentar
+    Select the modules with the best documentation coverage.
+
+    Calculate, for each module, the percentage of documented items: `documented_items / total_items * 100`, 
+    and return the best ones sorted from highest to lowest.
+
+    **Notes:**
+        - Modules with `total_items == 0` are omitted to avoid invalid divisions.
+
+    Args:
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+        limit (int, optional):
+            Maximum number of modules to be returned.
+
+    Returns:
+        List:
+            List of items (dictionaries) sorted by descending percentage, truncated to `limit`.
     """
     candidates = []
 
@@ -365,8 +476,23 @@ def _best_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, 
 
 def _worst_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 5) -> List[str]:
     """
-    ## TODO
-    - Documentar
+    Select the modules with the worst documentation coverage.
+
+    Same as `_best_documented_modules`, but sorted from lowest to highest percentage to identify modules that 
+    require priority attention in terms of documentation.
+
+    **Notes:**
+        - Modules with `total_items == 0` are omitted.
+
+    Args:
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+        limit (int, optional):
+            Maximum number of modules to be returned.
+
+    Returns:
+        List:
+            List of items (dictionaries) sorted by ascending percentage, truncated to `limit`.
     """
     candidates = []
 
@@ -398,8 +524,34 @@ def _dependencies(
     factor: int = 2
 ) -> Dict[str, Union[int, float, List[str], str]]:
     """
-    ## TODO
-    - Documentar
+    Analyzes the graph of internal dependencies between modules and generates a summary.
+
+    Based on a dependency map (`dep_map`), it calculates:
+        - Out-degree: number of modules that each module imports (outgoing dependencies).
+        - In-degree: number of modules that import each module (incoming dependencies).
+        - Independent modules: no incoming or outgoing dependencies.
+        - Average dependencies per module (average of outgoing edges).
+        - Core modules: highest total connectivity (in + out), the most central.
+
+    **Notes:**
+        - If `dep_map` is empty, return default values and a summary message.
+        - If a destination appears that does not exist as a key (rare case), it is added to maintain consistency.
+        - Dense interconnectivity is estimated by counting modules with >= 5 outgoing dependencies.
+
+    Args:
+        dep_map(Dict[str, Set[str]]): 
+            Dictionary where each key is a module and its value is a set of modules on which 
+            it depends.
+        repository (str):
+            Base path of the repository or project to be analyzed.
+        limit (int, optional):
+            Maximum number of modules to be returned.
+        factor (int, optional):
+            Number of decimal places to use when rounding the average number of dependencies when it is not an integer.
+
+    Returns:
+        Dict:
+            Dictionary with keys expected by the template.
     """
     if not dep_map:
         return {
@@ -517,8 +669,41 @@ def _risks(
     limit: int = 8
 ) -> List[str]:
     """
-    ## TODO
-    - Documentar
+    Generates a list of main technical risks based on heuristic signals.
+
+    Assesses typical risks of maintainability and evolution:
+        1) Low or moderate documentation coverage.
+        2) Concentration of SLOC in a few modules (top 20%).
+        3) Existence of very large modules (>= 1500 SLOC).
+        4) Modules with many methods (>= 40) as an indicator of complexity.
+        5) Presence of hotspots (critical modules due to size/complexity/doc).
+        6) Dependencies concentrated in core modules (cascading impact).
+
+    **Notes:**
+        - If there is no `module_stats`, return a message indicating that risks could not be calculated.
+        - The thresholds (35/55, 60% concentration, 1500 SLOC, 40 methods) are heuristic.
+
+    Args:
+        sloc (int):
+            Number of meaningful lines in the file, excluding comments and blank lines.
+        class_percent (Union[float, int]):
+            Percentage of documented classes out of the total.
+        method_percent (Union[float, int]):
+            Percentage of documented methods out of the total.
+        attribute_percent (Union[float, int]):
+            Percentage of documented attributes out of the total.
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+        hotspots (List[Dict[str, Union[str, int]]]):
+            List of detected hotspots.
+        dependencies (Dict[str, Union[int, float, List[str], str]]):
+            Dependency summary (includes `core_modules`).
+        limit (int, optional):
+            Maximum number of modules to be returned.
+    
+    Returns
+        List:
+            List of phrases describing main risks, truncated to `limit`.
     """
     risks: List[str] = []
 
@@ -599,8 +784,34 @@ def _risk_impact(
     dependencies: Dict[str, Union[int, float, List[str], str]]
 ) -> Dict[str, List[str]]:
     """
-    ## TODO
-    - Documentar
+    Interpret the impact of risks in three dimensions: maintainability, onboarding, and evolution.
+
+    Produces explanations in natural language that help understand how they affect:
+        - Documentation coverage (average).
+        - Number of hotspots.
+        - Total code size (SLOC).
+        - Average dependency level and core size (core modules).
+
+    **Notes:**
+        - The documentation thresholds and size thresholds are heuristic for classifying impact.
+        
+    Args:
+        sloc (int):
+            Number of meaningful lines in the file, excluding comments and blank lines.
+        class_percent (Union[float, int]):
+            Percentage of documented classes out of the total.
+        method_percent (Union[float, int]):
+            Percentage of documented methods out of the total.
+        attribute_percent (Union[float, int]):
+            Percentage of documented attributes out of the total.
+        hotspots (List[Dict[str, Union[str, int]]]):
+            List of detected hotspots.
+        dependencies (Dict[str, Union[int, float, List[str], str]]):
+            Dependency summary (includes `core_modules`).
+
+    Returns:
+        Dict:
+            Dictionary with three lists of phrases.
     """
     avg_doc = average([class_percent, method_percent, attribute_percent])
 
@@ -764,8 +975,37 @@ def _recommendations(
     limit: int = 6
 ) -> Dict[str, List[str]]:
     """
-    ## TODO
-    - Documentar
+    Generates actionable recommendations for refactoring, documentation, and architecture.
+
+    Produces three lists of recommendations:
+        - `refactor`: actions to reduce complexity and size (hotspots, very large modules, many methods).
+        - `docs`: actions to improve coverage and consistency of docstrings.
+        - `architecture`: actions to reduce coupling, improve layers, and manage core modules.
+
+    **Notes:**
+        - If there is no `module_stats`, a recommendation is returned indicating that there is insufficient data.
+        - Heuristic thresholds used:
+            - Large module: >= 1500 SLOC.
+            - Many methods: >= 40.
+            - High dependencies: `avg_dependencies` >= 5 (moderate from 2).
+
+    Args:
+        class_percent (Union[float, int]):
+            Percentage of documented classes out of the total.
+        method_percent (Union[float, int]):
+            Percentage of documented methods out of the total.
+        attribute_percent (Union[float, int]):
+            Percentage of documented attributes out of the total.
+        module_stats (List[Dict[str, Union[str, int]]]):
+            List with detailed statistics by module.
+        hotspots (List[Dict[str, Union[str, int]]]):
+            List of detected hotspots.
+        dependencies (Dict[str, Union[int, float, List[str], str]]):
+            Dependency summary (includes `core_modules`).
+
+    Returns:
+        Dict:
+            Dictionary with lists of recommendations.
     """
     rec = {
         'refactor': [],

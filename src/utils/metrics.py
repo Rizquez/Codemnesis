@@ -1,7 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from pathlib import Path
-from typing import TYPE_CHECKING, List
+from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -44,8 +44,27 @@ def module_metrics(src: str, classes: List['ClassInfo'], funcs: List['FunctionIn
 
 def repository_metrics(modules: List['ModuleInfo'], repository: str) -> RepositoryMetrics:
     """
-    ## TODO
-    - Documentar
+    Calculates aggregate metrics for a repository from a list of modules that have already been analyzed.
+
+    It traverses the modules (sorted by their path), accumulates code size metrics (LOC/SLOC), and counts 
+    design/documentation elements in classes.
+
+    In addition, it builds two structures per module:
+        - modules_overview: general summary per file (lines, number of classes/methods/functions, and attributes).
+        - module_stats: documentation-oriented summary per file (SLOC, counts, and % implied via totals).
+
+    Args:
+        modules (List[ModuleInfo]):
+            List of analyzed modules, each ModuleInfo must expose:
+                - path: module file path.
+                - metrics: object with metrics.
+                - classes: collection of module classes; each class with doc, methods, and attributes.
+        repository (str):
+            Root path of the repository. Used to calculate a relative file name, taking the name from the relative path.
+
+    Returns:
+        RepositoryMetrics:
+            Object with aggregated metrics from the repository.
     """
     loc = 0
     sloc = 0

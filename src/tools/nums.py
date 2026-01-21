@@ -11,7 +11,7 @@ from typing import Union, List
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['percentage', 'percentage_as_num', 'average']
+__all__ = ['percentage', 'average']
 
 def percentage(part: int, total: int, *, factor: int = 2) -> Union[float, int]:
     """
@@ -36,29 +36,6 @@ def percentage(part: int, total: int, *, factor: int = 2) -> Union[float, int]:
     num = round((part / total) * 100, factor)
 
     return int(num) if num.is_integer() else num
-
-def percentage_as_num(value: Union[str, int, float]) -> float:
-    """
-    Converts a value formatted as a percentage into a floating point number.
-
-    Args:
-        value (Union[str, int, float]):
-            Numeric value or string representing a percentage.
-
-    Returns:
-        float:
-            The resulting numeric value. If the conversion fails, 0.0 is returned.
-    """
-    if isinstance(value, (int, float)):
-        return float(value)
-    
-    txt = str(value).strip()
-    txt = txt.replace('\u0025', '').replace('%', '').replace('.', '').strip()
-
-    try:
-        return float(txt)
-    except Exception:
-        return 0.0
     
 def average(elements: List[Union[int, float]]) -> Union[int, float]:
     """

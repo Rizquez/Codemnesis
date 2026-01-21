@@ -1,7 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 import os
-from typing import TYPE_CHECKING, Set
+from typing import Set, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from argparse import Namespace

@@ -1,7 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from pathlib import Path
 import ast, logging, inspect, re
+from pathlib import Path
 from typing import List, Tuple, Optional
 # ---------------------------------------------------------------------------------------------------------------------
 
