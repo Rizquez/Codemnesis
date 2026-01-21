@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 from pathlib import Path
 from graphviz import Digraph
-from typing import TYPE_CHECKING, List, Dict, Set
+from typing import List, Dict, Set, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)

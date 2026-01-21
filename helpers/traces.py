@@ -1,6 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-from typing import TYPE_CHECKING, List, Tuple
+from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger
@@ -34,10 +34,6 @@ def error_trace(tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Ex
             Logger instance where the error will be recorded.
         error (Exception): 
             Captured exception object.
-    
-    ## TODO
-    - Develop the logic so that when the project is executed on a `Linux` environment, 
-    it correctly filters external dependencies.
     """
     filtered = [
         (filename, line, funcname, text) 

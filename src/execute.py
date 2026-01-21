@@ -1,7 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 import sys, traceback, logging
-from typing import TYPE_CHECKING, List
+from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
