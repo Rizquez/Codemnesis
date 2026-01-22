@@ -1,4 +1,4 @@
-# Codemnesis - v.0.14.0 (Development temporarily halted)
+# Codemnesis - v.0.14.0 (*Development temporarily halted*)
 
 ## 🧾 Project description
 
