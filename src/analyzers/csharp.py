@@ -286,12 +286,12 @@ def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
 
     # It is wrapped in a <root> to make it valid XML
     try:
-        root = ET.fromstring(text=f'<root>\n{raw}\n</root>')
+        root = ET.fromstring(f'<root>\n{raw}\n</root>')
         return _format_xml_documentation(root)
     except Exception:
         return raw # If the XML is invalid, the text is returned as is
 
-def _format_xml_documentation(root: ET.Element[str]) -> str:
+def _format_xml_documentation(root: ET.Element) -> str:
     """
     Formats a block of C# XML documentation and converts it into readable text 
     with a Markdown-like structure.
@@ -338,7 +338,7 @@ def _format_xml_documentation(root: ET.Element[str]) -> str:
 
         if txtr:
             parts.append('*Returns:*')
-            parts.append(f'- {txtr.replace('- ', '')}')
+            parts.append(f'- {txtr.replace("- ", "")}')
             parts.append('')
 
     exceptions = root.findall('exception')
