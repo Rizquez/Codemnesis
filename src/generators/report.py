@@ -51,31 +51,26 @@ def generate_report(template: str, output: str, repository: str, framework: str,
     """
     docx = DocxTemplate(template)
 
-    date = datetime.now()
-
-    repo_name = Path(repository).resolve().name
-
-    statistics = repository_metrics(modules, repository)
+    repository_name = Path(repository).resolve().name
 
     dep_map = dependencies_map(modules, repository, framework)
+    statistics = repository_metrics(modules, repository)
 
     hotspots = _hotspots(statistics.sloc, statistics.module_stats)
-
+    dependencies = _dependencies(dep_map, repository)
     doc_coverage = _doc_coverage(
         statistics.class_percent, 
         statistics.method_percent, 
         statistics.attribute_percent
     )
 
-    dependencies = _dependencies(dep_map, repository)
-
     context = {
-        'repository_name': f"{repo_name}.",
-        'analysis_date': f"{date.strftime('%A, %B %d, %Y')}.",
+        'repository_name': f"{repository_name}.",
+        'analysis_date': f"{datetime.now().strftime('%A, %B %d, %Y')}.",
         'summary': _summary(
             statistics.sloc,
             framework,
-            repo_name,
+            repository_name,
             statistics.class_percent,
             statistics.method_percent,
             statistics.attribute_percent,
@@ -124,17 +119,15 @@ def generate_report(template: str, output: str, repository: str, framework: str,
     }
 
     docx.render(context)
-
     path = os.path.join(output, FILE)
-
     docx.save(path)
-
+    
     return path
 
 def _summary(
     sloc: int, 
     framework: str,
-    repo_name: str,
+    repository_name: str,
     class_percent: Union[float, int], 
     method_percent: Union[float, int], 
     attribute_percent: Union[float, int],
@@ -156,7 +149,7 @@ def _summary(
             Number of meaningful lines in the file, excluding comments and blank lines.
         framework (str):
             Name of the framework used, which must have a compatible mapping method.
-        repo_name (str):
+        repository_name (str):
             Name of the repository/project.
         class_percent (Union[float, int]):
             Percentage of documented classes out of the total.
@@ -197,7 +190,7 @@ def _summary(
     return {
         'repository_goal': (
             f"This repository implements a {framework.capitalize()}-based codebase "
-            f"designed to provide structured functionality within the {repo_name} project."
+            f"designed to provide structured functionality within the {repository_name} project."
         ),
         'scope': (
             f"The analysis covers all detected source modules, focusing on structure, "
