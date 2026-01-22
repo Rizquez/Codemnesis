@@ -11,8 +11,6 @@ from typing import List, Optional
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['format_docstring']
-
 def format_docstring(doc: str, *, cleaned: Optional[List[str]]) -> str:
     """
     Applies the full format to the received text (docstring) by cleanup steps.

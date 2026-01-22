@@ -16,8 +16,6 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['Arguments']
-
 class Arguments:
     """
     Class responsible for managing and validating arguments received by the console.

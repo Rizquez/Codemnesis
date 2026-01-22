@@ -20,8 +20,6 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['execute']
-
 logger = logging.getLogger(ALGORITHM)
 """
 Instance of the logger used by the analysis module.
@@ -58,12 +56,12 @@ def execute(settings: 'Settings') -> None:
     logger.info(f"README generated: {target}")
 
     logger.info("Generating dependency graph ...")
-    path = render_graphic(modules, settings.output, settings.repository, settings.framework)
-    logger.info(f"Dependency graph generated: {path}")
+    graphic_path = render_graphic(modules, settings.output, settings.repository, settings.framework)
+    logger.info(f"Dependency graph generated: {graphic_path}")
 
     logger.info("Generating report ...")
-    path = generate_report(settings.template, settings.output, settings.repository, settings.framework, modules)
-    logger.info(f"Report generated: {path}")
+    report_path = generate_report(settings.template, settings.output, settings.repository, settings.framework, modules)
+    logger.info(f"Report generated: {report_path}")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

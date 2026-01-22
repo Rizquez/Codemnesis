@@ -15,8 +15,6 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['Settings']
-
 FOLDER = 'Codemnesis-Output'
 
 EXTENSIONS = {
@@ -25,9 +23,9 @@ EXTENSIONS = {
 }
 
 EXCLUDED = {
-    '.git', '.hg', '.svn', '.idea', '.vscode', '.ruff_cache', '.mypy_cache', '.pytest_cache', '.tox', '.eggs', 
-    '__pycache__', 'build', 'dist', 'site-packages', 'node_modules', 'venv', '.venv', 'env', '.env', 'bin', 'obj',
-    'Debug', 'Release', '.vs'
+    '.git', '.hg', '.svn', '.idea', '.vscode', '.ruff_cache', '.mypy_cache', '.pytest_cache', '.tox', 
+    '.eggs', '__pycache__', 'build', 'dist', 'site-packages', 'node_modules', 'venv', '.venv', 'env', 
+    '.env', 'bin', 'obj', 'Debug', 'Release', '.vs'
 }
 
 class Settings:

@@ -13,8 +13,6 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['dependencies_map', 'identifiers_map']
-
 def dependencies_map(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set[str]]:
     """
     Build the dependency map between modules based on analysis information and the logical 
@@ -33,7 +31,6 @@ def dependencies_map(modules: List['ModuleInfo'], repository: str, framework: st
             Dependency structure produced by the corresponding repository and framework.
     """
     paths = _physical_paths(modules, repository, framework)
-
     return _resolve_imports(modules, paths)
 
 def identifiers_map(all_path: List[str]) -> Dict[str, str]:

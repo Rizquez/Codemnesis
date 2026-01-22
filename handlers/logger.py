@@ -16,11 +16,9 @@ from common.constants import ALGORITHM
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['HandlersLogger']
-
 FILE = 'Trace-Report.log'
 
-class HandlersLogger:
+class HandlerLogger:
     """
     Class responsible for managing the configuration of the logger used in the application.
 

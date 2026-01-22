@@ -11,8 +11,6 @@ from typing import Union, List
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['percentage', 'average']
-
 def percentage(part: int, total: int, *, factor: int = 2) -> Union[float, int]:
     """
     Calculate the percentage that `part` represents of `total`.
@@ -31,10 +29,9 @@ def percentage(part: int, total: int, *, factor: int = 2) -> Union[float, int]:
             The percentage value.
     """
     if total == 0:
-        return 0.0
+        return total
     
     num = round((part / total) * 100, factor)
-
     return int(num) if num.is_integer() else num
     
 def average(elements: List[Union[int, float]]) -> Union[int, float]:
@@ -50,7 +47,6 @@ def average(elements: List[Union[int, float]]) -> Union[int, float]:
             The calculated average.
     """
     num = sum(elements) / len(elements)
-
     return int(num) if num.is_integer() else num
 
 # ---------------------------------------------------------------------------------------------------------------------

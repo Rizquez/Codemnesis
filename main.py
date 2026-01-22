@@ -8,7 +8,7 @@ import time, psutil, logging
 from src.execute import execute
 from common.settings import Settings
 from handlers.arguments import Arguments
-from handlers.logger import HandlersLogger
+from handlers.logger import HandlerLogger
 from common.constants import ALGORITHM, ALGORITHM_VERSION
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     settings = Settings(Arguments.get())
 
-    HandlersLogger.set(settings.output)
+    HandlerLogger.set(settings.output)
 
     logger = logging.getLogger(ALGORITHM)
 
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     
     logger.info(f"Total memory consumed: {round((after - before) / pow(1024, 2), 2)} megabytes")
 
-    HandlersLogger.close(logger)
+    HandlerLogger.close(logger)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE
