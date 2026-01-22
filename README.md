@@ -1,4 +1,4 @@
-# Codemnesis - v.0.14.1
+# Codemnesis - v.0.14.2
 
 ## 🧾 Project description
 
@@ -161,7 +161,7 @@ Codemnesis/
 │   │   └── metrics.py
 │   └── execute.py
 ├── templates
-│   └── report.docx
+│   └── analysis_report.docx
 ├── .gitignore
 ├── LICENSE
 ├── main.py

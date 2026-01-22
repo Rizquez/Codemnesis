@@ -18,7 +18,7 @@ from common.constants import ALGORITHM
 
 __all__ = ['HandlersLogger']
 
-FILE = 'Events.log'
+FILE = 'Trace-Report.log'
 
 class HandlersLogger:
     """
