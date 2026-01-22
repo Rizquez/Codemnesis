@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import os
 from pathlib import Path
 from datetime import datetime
@@ -25,7 +26,7 @@ __all__ = ['generate_report']
 
 FILE = 'Report.docx'
 
-def generate_report(template: str, output: str, repository: str, framework: str, modules: List['ModuleInfo']) -> str:
+def generate_report(template: str, output: str, repository: str, framework: str, modules: List[ModuleInfo]) -> str:
     """
     Generates a repository analysis report in DOCX format from a template.
 
@@ -199,7 +200,7 @@ def _summary(
         'key_points': key_points
     }
 
-def _global_stats(loc: int, sloc: int, framework: str, modules: List['ModuleInfo']) -> Dict[str, Union[str, int]]:
+def _global_stats(loc: int, sloc: int, framework: str, modules: List[ModuleInfo]) -> Dict[str, Union[str, int]]:
     """
     Build basic global statistics for the report.
 

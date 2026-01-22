@@ -121,7 +121,7 @@ Where:
 - **excluded (optional):** Additional files and extensions to exclude from the scan, separated by commas if multiple are specified.
 
 > [!NOTE]
-> For more details about the parameters and execution arguments, see the file located at: *handlers/arguments.py*
+> For more details on the parameters and execution arguments, see the file: *handlers/arguments.py*
 
 ## 📂 Project structure
 
@@ -171,22 +171,37 @@ Codemnesis/
 
 ## 🎯 Additional considerations for developers
 
-### Forward References (PEP 484)
+### Forward References and Modern Typing (PEP 484 / PEP 563)
 
-The project uses *Forward References* according to *PEP 484*. By using `TYPE_CHECKING`, the import of a class is only performed at static type checking time (for example, with *mypy*). During execution, `TYPE_CHECKING` evaluates to `False`, preventing the actual import. This optimizes performance and allows forward references to classes.
+The project uses *Forward References* following modern Python recommendations for static typing.
+
+To do this, two complementary mechanisms are combined:
+
+- `from __future__ import annotations`, which delays the evaluation of all type annotations.
+- `TYPE_CHECKING`, which allows imports to be performed only during static analysis (for example, with *mypy* or editors such as VS Code), avoiding runtime dependencies.
 
 Example:
 
 ```python
+from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from models import MyFirstClass
 
 class MySecondClass:
-    def do_something(self, first: 'MyFirstClass') -> None:
+    def do_something(self, first: MyFirstClass) -> None:
         pass
 ```
+
+This combination allows you to:
+
+- Avoid import cycles.
+- Not execute unnecessary imports at runtime.
+- Write clean and readable type annotations without having to use manual strings.
+- Maintain compatibility with static analysis tools.
+
+During normal program execution, `TYPE_CHECKING` evaluates to `False`, so protected imports are not performed. Type annotations are not evaluated at runtime thanks to `from __future__ import annotations`.
 
 ### Convention for private attributes and methods (Name mangling)
 

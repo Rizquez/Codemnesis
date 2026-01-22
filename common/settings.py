@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import os
 from typing import Set, TYPE_CHECKING
 
@@ -39,7 +40,7 @@ class Settings:
     When this class is instantiated, the output paths and necessary resources are automatically generated.
     """
 
-    def __init__(self, args: 'Namespace') -> None:
+    def __init__(self, args: Namespace) -> None:
         self.__root = self.__root_path()
 
         self.__framework = args.framework.lower()

@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-def module_metrics(src: str, classes: List['ClassInfo'], funcs: List['FunctionInfo']) -> ModuleMetrics:
+def module_metrics(src: str, classes: List[ClassInfo], funcs: List[FunctionInfo]) -> ModuleMetrics:
     """
     Calculate basic module metrics from the source content and the previously analyzed structure.
 
@@ -40,7 +41,7 @@ def module_metrics(src: str, classes: List['ClassInfo'], funcs: List['FunctionIn
         n_methods=sum(len(cls.methods) for cls in classes)
     )
 
-def repository_metrics(modules: List['ModuleInfo'], repository: str) -> RepositoryMetrics:
+def repository_metrics(modules: List[ModuleInfo], repository: str) -> RepositoryMetrics:
     """
     Calculates aggregate metrics for a repository from a list of modules that have already been analyzed.
 

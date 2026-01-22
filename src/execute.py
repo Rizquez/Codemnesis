@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import sys, traceback, logging
 from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
@@ -25,7 +26,7 @@ logger = logging.getLogger(ALGORITHM)
 Instance of the logger used by the analysis module.
 """
 
-def execute(settings: 'Settings') -> None:
+def execute(settings: Settings) -> None:
     """
     Executes the main flow of automatic documentation generation for the project.
 
@@ -45,7 +46,7 @@ def execute(settings: 'Settings') -> None:
     
     analyze_method = globals().get(f'analyze_{settings.framework}')
 
-    modules: List['ModuleInfo'] = []
+    modules: List[ModuleInfo] = []
     for file in files:
         try:
             modules.append(analyze_method(file))

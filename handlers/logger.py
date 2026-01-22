@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import os, logging
 from typing import TYPE_CHECKING
 from logging.handlers import RotatingFileHandler
@@ -53,7 +54,7 @@ class HandlerLogger:
         logger.addHandler(cls.__stream_handler())
         
     @staticmethod
-    def close(logger: 'Logger') -> None:
+    def close(logger: Logger) -> None:
         """
         Closes and removes all handlers associated with a specific logger.
 

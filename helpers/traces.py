@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-def error_trace(tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Exception) -> None:
+def error_trace(tb: List[Tuple[str, int, str, str]], logger: Logger, error: Exception) -> None:
     """
     It records an error in the logger with filtered trace information.
 

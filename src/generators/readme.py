@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
@@ -20,7 +21,7 @@ __all__ = ['render_readme', 'write_readme']
 
 FILE = 'README.md'
 
-def render_readme(modules: List['ModuleInfo'], repository: str, *, cleaned: List[str] = ['`']) -> str:
+def render_readme(modules: List[ModuleInfo], repository: str, *, cleaned: List[str] = ['`']) -> str:
     """
     Generates the contents of the README file from the information analyzed from the project modules.
 

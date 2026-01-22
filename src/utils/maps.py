@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Dict, Set
 # ---------------------------------------------------------------------------------------------------------------------
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-def dependencies_map(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set[str]]:
+def dependencies_map(modules: List[ModuleInfo], repository: str, framework: str) -> Dict[str, Set[str]]:
     """
     Build the dependency map between modules based on analysis information and the logical 
     paths of the project.
@@ -50,7 +51,7 @@ def identifiers_map(all_path: List[str]) -> Dict[str, str]:
     """
     return {path: f'm{idx}' for idx, path in enumerate(all_path)}
 
-def _resolve_imports(modules: List['ModuleInfo'], paths: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
+def _resolve_imports(modules: List[ModuleInfo], paths: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
     """
     Builds the actual dependency map between repository modules.
 
@@ -105,7 +106,7 @@ def _resolve_imports(modules: List['ModuleInfo'], paths: Dict[str, Set[str]]) ->
 
     return dep_map
 
-def _physical_paths(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set[str]]:
+def _physical_paths(modules: List[ModuleInfo], repository: str, framework: str) -> Dict[str, Set[str]]:
     """
     Retrieves the logical module names along with their actual physical paths.
 

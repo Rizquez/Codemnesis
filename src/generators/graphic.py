@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from pathlib import Path
 from graphviz import Digraph
 from typing import List, Dict, Set, TYPE_CHECKING
@@ -28,7 +29,7 @@ EDGE_INTRA = "#444444"
 EDGE_INTER = "#1f77b4"
 
 def render_graphic(
-    modules: List['ModuleInfo'], 
+    modules: List[ModuleInfo], 
     output: str, 
     repository: str, 
     framework: str, 
