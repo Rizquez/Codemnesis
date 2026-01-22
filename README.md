@@ -1,4 +1,4 @@
-# Codemnesis - v.0.14.0 (*Development temporarily halted*)
+# Codemnesis - v.0.14.3
 
 ## 🧾 Project description
 
@@ -74,6 +74,35 @@ Once the environment is activated, install the dependencies:
 pip install -r requirements.txt
 ```
 
+## 📌 External dependency: Graphviz (required)
+
+This project uses Python's graphviz library to generate diagrams of dependencies between modules.
+However, this library is only a wrapper and requires Graphviz to be installed at the system level.
+
+Specifically, the dot executable must be available in the system PATH.
+
+If Graphviz is not installed or is not accessible from the PATH, graph generation will fail with an error similar to:
+
+```sh
+ExecutableNotFound: failed to execute 'dot'
+```
+
+### Installing Graphviz on Windows
+
+1. Download the official installer from their [website](https://graphviz.org/download/).
+2. Run the installer and make sure to check the option: *Add Graphviz to the system PATH*.
+
+Verify the installation by opening a terminal (CMD or PowerShell) and running:
+
+```sh
+dot -V
+```
+
+If the installation is successful, the installed version of Graphviz will be displayed.
+
+> [!IMPORTANT]
+> Installing the graphviz package with pip is not sufficient on its own. It is also necessary to install Graphviz as a system program.
+
 ## 🚀 Execution
 
 ### Console
@@ -81,7 +110,7 @@ pip install -r requirements.txt
 To run the application from the console, you can use the following command shown as an example:
 
 ```sh
-python main.py --framework=... --repository=... --output=... --excluded=...
+python main.py --framework=xxx --repository=xxx --output=xxx --excluded=xxx
 ```
 
 Where:
@@ -132,7 +161,7 @@ Codemnesis/
 │   │   └── metrics.py
 │   └── execute.py
 ├── templates
-│   └── report.docx
+│   └── analysis_report.docx
 ├── .gitignore
 ├── LICENSE
 ├── main.py

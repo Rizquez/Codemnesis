@@ -49,7 +49,7 @@ class Settings:
         self.__excluded = self.__set_excluded(args.excluded)
         self.__included = EXTENSIONS.get(self.__framework, set())
         
-        self.__template = os.path.join(self.__root, 'templates', 'report.docx')
+        self.__template = os.path.join(self.__root, 'templates', 'analysis_report.docx')
 
         if args.output:
             self.__output = os.path.join(args.output, FOLDER)
