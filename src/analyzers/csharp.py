@@ -78,12 +78,12 @@ def analyze_csharp(path: Path) -> ModuleInfo:
 
     This parser does NOT use the C# compiler, but rather regular expressions + manual analysis. 
     
-    This means:
+    **This means:**
         - Easier to maintain.
         - Faster.
         - But not perfect: if the syntax is very complex, there may be unsupported cases.
 
-    The most sensitive areas are:
+    **The most sensitive areas are:**
         1. CLASS_RE, METHOD_RE, ATTRIBUTE_RE → to improve detection.
         2. Key block delimitation → important to avoid false hits.
         3. XML docstring processing → to further enrich data extraction.
@@ -103,22 +103,13 @@ def analyze_csharp(path: Path) -> ModuleInfo:
     classes: List[ClassInfo] = []
 
     for cls_match in CLASS_RE.finditer(src):
-        kind = cls_match.group(1) # class, record, struct, interface
         cls_name = cls_match.group(2)
-        
-        # Exact line where the class begins
-        cls_start = cls_match.start()
-        cls_lineno = src.count("\n", 0, cls_start) + 1
-
-        # Documentation and previous attributes (decorators)
-        cls_doc = _collect_xml_text(lines, cls_lineno - 1)
-        cls_decorators = _collect_decorators(lines, cls_lineno - 1)
-
+        cls_lineno = src.count('\n', 0, cls_match.start()) + 1 # Exact line where the class begins
         cls_info = ClassInfo(
             name=cls_name, 
             lineno=cls_lineno, 
-            doc=cls_doc, 
-            decorators=cls_decorators
+            doc=_collect_xml_text(lines, cls_lineno - 1), 
+            decorators=_collect_decorators(lines, cls_lineno - 1)
         )
 
         # Search for the nearest { key after the declaration
@@ -126,79 +117,49 @@ def analyze_csharp(path: Path) -> ModuleInfo:
         # But it would fail if there were curly braces inside multi-line text literals (very rare)
         idx_brace = src.find('{', cls_match.end())
         if idx_brace == -1:
+            kind = cls_match.group(1) # class, record, struct, interface
             logger.warning(f"Could not find '{{' for {kind} {cls_name} in {path.name} (Line {cls_lineno})")
             classes.append(cls_info)
             continue
 
-        # Corresponding } key
-        depth = 0
-        idx = idx_brace
-        idx_end = len(src)
-
-        while idx < len(src):
-            if src[idx] == '{':
-                depth += 1
-            elif src[idx] == '}':
-                depth -= 1
-
-                if depth == 0:
-                    idx_end = idx
-                    break
-            else:
-                pass
-            
-            idx += 1
-
-        class_block = src[idx_brace:idx_end]
+        block = _extract_text_block(src, idx_brace)
 
         # It is compiled dynamically because the constructor name = class name
-        CTOR_RE = re.compile(
+        CONSTRUCTOR_RE = re.compile(
             rf'^\s*(?:public|private|protected|internal)\s*'
             rf'(?:static\s+)?'
             rf'{re.escape(cls_name)}\s*\([^)]*\)\s*{{?',
             re.MULTILINE
         )
 
-        for ctor in CTOR_RE.finditer(class_block):
-            ctor_abs_start = idx_brace + ctor.start()
-            ctor_lineno = src.count('\n', 0, ctor_abs_start) + 1
-            ctor_doc = _collect_xml_text(lines, ctor_lineno - 1)
-
+        for ctor in CONSTRUCTOR_RE.finditer(block):
+            ctor_lineno = src.count('\n', 0, idx_brace + ctor.start()) + 1
             cls_info.methods.append(
                 FunctionInfo(
                     name=cls_name, 
                     lineno=ctor_lineno, 
-                    doc=ctor_doc
+                    doc=_collect_xml_text(lines, ctor_lineno - 1)
                 )
             )
 
-        for method in METHOD_RE.finditer(class_block):
-            method_name = method.group(1)
-            method_abs_start = idx_brace + method.start()
-            method_lineno = src.count('\n', 0, method_abs_start) + 1
-            method_doc = _collect_xml_text(lines, method_lineno - 1)
-            method_decorators = _collect_decorators(lines, method_lineno - 1)
-
+        for method in METHOD_RE.finditer(block):
+            method_lineno = src.count('\n', 0, idx_brace + method.start()) + 1
             cls_info.methods.append(
                 FunctionInfo(
-                    name=method_name,
+                    name=method.group(1),
                     lineno=method_lineno,
-                    doc=method_doc,
-                    decorators=method_decorators
+                    doc=_collect_xml_text(lines, method_lineno - 1),
+                    decorators=_collect_decorators(lines, method_lineno - 1)
                 )
             )
 
-        for attr in ATTRIBUTE_RE.finditer(class_block):
-            attr_name = attr.group(1)
-            attr_abs_start = idx_brace + attr.start()
-            attr_lineno = src.count('\n', 0, attr_abs_start) + 1
-            attr_doc = _collect_xml_text(lines, attr_lineno - 1)
-
+        for attr in ATTRIBUTE_RE.finditer(block):
+            attr_lineno = src.count('\n', 0, idx_brace + attr.start()) + 1
             cls_info.attributes.append(
                 AttributeInfo(
-                    name=attr_name, 
+                    name=attr.group(1), 
                     lineno=attr_lineno, 
-                    doc=attr_doc
+                    doc=_collect_xml_text(lines, attr_lineno - 1)
                 )
             )
 
@@ -212,6 +173,48 @@ def analyze_csharp(path: Path) -> ModuleInfo:
         imports=_collect_imports(src),
         metrics=module_metrics(src, classes, [])
     )
+
+def _extract_text_block(src: str, idx_brace: int) -> str:
+    """
+    Extracts the block of text delimited by curly brackets `{ ... }` starting from an initial position.
+
+    This block is used to limit searches with regular expressions (methods, attributes, constructors) to 
+    the body of a class/struct/record/interface, avoiding false positives outside its scope.
+
+    Args:
+        src (str):
+            Complete content of the C# file in text format.
+
+        idx_brace (int):
+            Index (0-based) within src where the opening brace `{` of the block to be extracted is located.
+
+    Returns:
+        str:
+            Substring of the source code representing the block delimited by braces, from `src[idx_brace]` 
+            to just before the matching closing brace.
+
+    ### TODO
+    It is not a formal C# parser: if there are curly braces `{` or `}` within strings, comments, or multiline 
+    literals, the count may be off and return an incorrect block.
+    """
+    depth = 0
+    idx_end = len(src)
+    idx_loop = idx_brace
+
+    while idx_loop < len(src):
+        if src[idx_loop] == '{':
+            depth += 1
+        elif src[idx_loop] == '}':
+            depth -= 1
+            if depth == 0:
+                idx_end = idx_loop
+                break
+        else:
+            pass # Other characters are ignored; only braces affect block depth
+        
+        idx_loop += 1
+
+    return src[idx_brace:idx_end]
 
 def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
     """
@@ -248,7 +251,7 @@ def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
             Processed and cleaned text from the documentation, or None if there is no associated documentation.
     """
     idx = start_idx - 1
-    buf: List[str] = []
+    buffer: List[str] = []
 
     # It ascends by collecting lines with C# XML format: /// ...
     while idx >= 0:
@@ -256,7 +259,7 @@ def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
 
         # The 3 slashes are removed and the content is stored
         if txt.strip().startswith('///'):
-            buf.append(txt.strip().lstrip('/').strip())
+            buffer.append(txt.strip().lstrip('/').strip())
             idx -= 1
             continue
 
@@ -272,23 +275,38 @@ def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
 
         break
 
-    if not buf:
+    if not buffer:
         return None
 
-    buf.reverse()
-    raw = '\n'.join(buf)
+    buffer.reverse()
+    raw = '\n'.join(buffer)
 
     if not any(tag in raw for tag in ('<summary', '<param', '<returns', '<exception')):
         return raw
 
     # It is wrapped in a <root> to make it valid XML
-    xml_source = '<root>\n' + raw + '\n</root>'
-
     try:
-        root = ET.fromstring(xml_source)
+        root = ET.fromstring(f'<root>\n{raw}\n</root>')
+        return _format_xml_documentation(root)
     except Exception:
         return raw # If the XML is invalid, the text is returned as is
 
+def _format_xml_documentation(root: ET.Element) -> str:
+    """
+    Formats a block of C# XML documentation and converts it into readable text 
+    with a Markdown-like structure.
+
+    The function receives an XML root node and extracts the most common documentation 
+    sections, transforming them into a consistent and easy-to-render format.
+
+    Args:
+        root (Element[str]):
+            Root node of the XML tree containing the C# documentation.
+
+    Returns:
+        str:
+            Formatted and standardized text, ready to be included in Markdown documentation.
+    """
     parts: List[str] = []
 
     summary = root.find('summary')
@@ -319,9 +337,8 @@ def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
         txtr = _xml_node_to_text(returns).strip()
 
         if txtr:
-            txtr = txtr.replace('- ', '')
             parts.append('*Returns:*')
-            parts.append(f'- {txtr}')
+            parts.append(f'- {txtr.replace("- ", "")}')
             parts.append('')
 
     exceptions = root.findall('exception')
@@ -378,7 +395,7 @@ def _xml_node_to_text(node: ET.Element) -> str:
 
             if cref:
                 parts.append(cref)
-                
+
         elif child.tag == 'paramref':
             name = child.attrib.get('name', '').strip()
             
@@ -456,7 +473,6 @@ def _collect_imports(src: str) -> List[str]:
             using `using` statements.
     """
     src = src.lstrip('\ufeff')
-
     namespaces = sorted({item.group(1) for item in NAMESPACE_RE.finditer(src)})
     usings = sorted({item.group(1) for item in USING_RE.finditer(src)})
 

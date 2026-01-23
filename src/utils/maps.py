@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Dict, Set
 # ---------------------------------------------------------------------------------------------------------------------
@@ -13,9 +14,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['dependencies_map', 'identifiers_map']
-
-def dependencies_map(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set[str]]:
+def dependencies_map(modules: List[ModuleInfo], repository: str, framework: str) -> Dict[str, Set[str]]:
     """
     Build the dependency map between modules based on analysis information and the logical 
     paths of the project.
@@ -33,7 +32,6 @@ def dependencies_map(modules: List['ModuleInfo'], repository: str, framework: st
             Dependency structure produced by the corresponding repository and framework.
     """
     paths = _physical_paths(modules, repository, framework)
-
     return _resolve_imports(modules, paths)
 
 def identifiers_map(all_path: List[str]) -> Dict[str, str]:
@@ -53,7 +51,7 @@ def identifiers_map(all_path: List[str]) -> Dict[str, str]:
     """
     return {path: f'm{idx}' for idx, path in enumerate(all_path)}
 
-def _resolve_imports(modules: List['ModuleInfo'], paths: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
+def _resolve_imports(modules: List[ModuleInfo], paths: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
     """
     Builds the actual dependency map between repository modules.
 
@@ -108,7 +106,7 @@ def _resolve_imports(modules: List['ModuleInfo'], paths: Dict[str, Set[str]]) ->
 
     return dep_map
 
-def _physical_paths(modules: List['ModuleInfo'], repository: str, framework: str) -> Dict[str, Set[str]]:
+def _physical_paths(modules: List[ModuleInfo], repository: str, framework: str) -> Dict[str, Set[str]]:
     """
     Retrieves the logical module names along with their actual physical paths.
 
@@ -135,8 +133,6 @@ def _physical_paths(modules: List['ModuleInfo'], repository: str, framework: str
     """
     dct = {}
 
-    root = Path(repository).resolve()
-
     for module in modules:
         if framework == 'csharp': # Imports are prefixed with __ns__: to distinguish them from regular imports
             for imp in getattr(module, 'imports', []):
@@ -144,7 +140,7 @@ def _physical_paths(modules: List['ModuleInfo'], repository: str, framework: str
                     ns = imp[len('__ns__:'):]
                     dct.setdefault(ns, set()).add(module.path)
         elif framework == 'python': # Converts absolute path → relative path → module name
-            relative = Path(module.path).resolve().relative_to(root)
+            relative = Path(module.path).resolve().relative_to(Path(repository).resolve())
             name = relative.with_suffix('').as_posix().replace('/', '.')
             dct.setdefault(name, set()).add(module.path)
         else:

@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import os
 from typing import Set, TYPE_CHECKING
 
@@ -15,8 +16,6 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['Settings']
-
 FOLDER = 'Codemnesis-Output'
 
 EXTENSIONS = {
@@ -25,9 +24,9 @@ EXTENSIONS = {
 }
 
 EXCLUDED = {
-    '.git', '.hg', '.svn', '.idea', '.vscode', '.ruff_cache', '.mypy_cache', '.pytest_cache', '.tox', '.eggs', 
-    '__pycache__', 'build', 'dist', 'site-packages', 'node_modules', 'venv', '.venv', 'env', '.env', 'bin', 'obj',
-    'Debug', 'Release', '.vs'
+    '.git', '.hg', '.svn', '.idea', '.vscode', '.ruff_cache', '.mypy_cache', '.pytest_cache', '.tox', 
+    '.eggs', '__pycache__', 'build', 'dist', 'site-packages', 'node_modules', 'venv', '.venv', 'env', 
+    '.env', 'bin', 'obj', 'Debug', 'Release', '.vs'
 }
 
 class Settings:
@@ -41,7 +40,7 @@ class Settings:
     When this class is instantiated, the output paths and necessary resources are automatically generated.
     """
 
-    def __init__(self, args: 'Namespace') -> None:
+    def __init__(self, args: Namespace) -> None:
         self.__root = self.__root_path()
 
         self.__framework = args.framework.lower()

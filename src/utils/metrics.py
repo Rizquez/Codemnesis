@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from pathlib import Path
 from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
@@ -16,9 +17,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['module_metrics']
-
-def module_metrics(src: str, classes: List['ClassInfo'], funcs: List['FunctionInfo']) -> ModuleMetrics:
+def module_metrics(src: str, classes: List[ClassInfo], funcs: List[FunctionInfo]) -> ModuleMetrics:
     """
     Calculate basic module metrics from the source content and the previously analyzed structure.
 
@@ -42,7 +41,7 @@ def module_metrics(src: str, classes: List['ClassInfo'], funcs: List['FunctionIn
         n_methods=sum(len(cls.methods) for cls in classes)
     )
 
-def repository_metrics(modules: List['ModuleInfo'], repository: str) -> RepositoryMetrics:
+def repository_metrics(modules: List[ModuleInfo], repository: str) -> RepositoryMetrics:
     """
     Calculates aggregate metrics for a repository from a list of modules that have already been analyzed.
 
@@ -69,13 +68,13 @@ def repository_metrics(modules: List['ModuleInfo'], repository: str) -> Reposito
     loc = 0
     sloc = 0
 
-    total_classes = 0
+    classes = 0
     documented_classes = 0
 
-    total_methods = 0
+    methods = 0
     documented_methods = 0
 
-    total_attributes = 0
+    attributes = 0
     documented_attributes = 0
 
     module_stats = []
@@ -87,64 +86,64 @@ def repository_metrics(modules: List['ModuleInfo'], repository: str) -> Reposito
         if not metrics:
             continue
 
-        file = Path(module.path).resolve().relative_to(Path(repository).resolve()).name
+        module_name = Path(module.path).resolve().relative_to(Path(repository).resolve()).name
 
         loc += metrics.loc or 0
         sloc += metrics.sloc or 0
 
-        n_attributes = 0
+        module_attributes = 0
 
-        module_total_classes = 0
+        module_classes = 0
         module_documented_classes = 0
 
-        module_total_methods = 0
+        module_methods = 0
         module_documented_methods = 0
 
-        module_total_attributes = 0
+        module_attributes = 0
         module_documented_attributes = 0
 
         for cls in module.classes:
-            total_classes += 1
-            module_total_classes += 1
-            n_attributes += len(cls.attributes)
+            classes += 1
+            module_classes += 1
+            module_attributes += len(cls.attributes)
 
             if cls.doc and cls.doc.strip():
                 documented_classes += 1
                 module_documented_classes += 1
 
             for meth in cls.methods:
-                total_methods += 1
-                module_total_methods += 1
+                methods += 1
+                module_methods += 1
 
                 if meth.doc and meth.doc.strip():
                     documented_methods += 1
                     module_documented_methods += 1
 
             for attr in cls.attributes:
-                total_attributes += 1
-                module_total_attributes += 1
+                attributes += 1
+                module_attributes += 1
 
                 if attr.doc and attr.doc.strip():
                     documented_attributes += 1
                     module_documented_attributes += 1
 
         modules_overview.append({
-            'name': file,
+            'name': module_name,
             'loc': metrics.loc,
             'sloc': metrics.sloc,
             'n_classes': metrics.n_classes,
             'n_methods': metrics.n_methods,
             'n_functions': metrics.n_functions,
-            'n_attributes': n_attributes
+            'n_attributes': module_attributes
         })
 
         module_stats.append({
-            'name': file,
+            'name': module_name,
             'sloc': metrics.sloc or 0,
             'n_classes': metrics.n_classes,
             'n_methods': metrics.n_methods,
             'n_functions': metrics.n_functions,
-            'total_items': module_total_classes + module_total_methods + module_total_attributes,
+            'total_items': module_classes + module_methods + module_attributes,
             'documented_items': module_documented_classes + module_documented_methods + module_documented_attributes
         })
 
@@ -153,9 +152,9 @@ def repository_metrics(modules: List['ModuleInfo'], repository: str) -> Reposito
         sloc=sloc,
         module_stats=module_stats,
         modules_overview=modules_overview,
-        class_percent=percentage(documented_classes, total_classes),
-        method_percent=percentage(documented_methods, total_methods),
-        attribute_percent=percentage(documented_attributes, total_attributes)
+        class_percent=percentage(documented_classes, classes),
+        method_percent=percentage(documented_methods, methods),
+        attribute_percent=percentage(documented_attributes, attributes)
     )
 
 # ---------------------------------------------------------------------------------------------------------------------

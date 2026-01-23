@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import sys, traceback, logging
 from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
@@ -20,14 +21,12 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['execute']
-
 logger = logging.getLogger(ALGORITHM)
 """
 Instance of the logger used by the analysis module.
 """
 
-def execute(settings: 'Settings') -> None:
+def execute(settings: Settings) -> None:
     """
     Executes the main flow of automatic documentation generation for the project.
 
@@ -36,34 +35,38 @@ def execute(settings: 'Settings') -> None:
         2. Analyzes each file found to extract its structure (classes, functions, and docstrings).
         3. Generates a README file with the consolidated documentation.
         4. Generates a visual dependency graph between modules.
+
+    Args:
+        settings (Settings):
+            Object that contains the general settings for the execution of the algorithm.
     """
     logger.info(f"Scanning repository: {settings.repository}")
     files = list(scanner(settings.repository, settings.included, settings.excluded))
     logger.info(f"Number of {settings.framework} files found: {len(files)}")
     
-    method = globals().get(f'analyze_{settings.framework}')
+    analyze_method = globals().get(f'analyze_{settings.framework}')
 
-    modules: List['ModuleInfo'] = []
+    modules: List[ModuleInfo] = []
     for file in files:
         try:
-            modules.append(method(file))
+            modules.append(analyze_method(file))
         except Exception:
             _, error, line_error = sys.exc_info()
             tb = traceback.extract_tb(line_error)
             error_trace(tb, logger, error)
 
     logger.info(f"Generating README ...")
-    txt = render_readme(modules, settings.repository)
-    target = write_readme(txt, settings.output)
-    logger.info(f"README generated: {target}")
+    readme_txt = render_readme(modules, settings.repository)
+    readme_path = write_readme(readme_txt, settings.output)
+    logger.info(f"README generated: {readme_path}")
 
     logger.info("Generating dependency graph ...")
-    path = render_graphic(modules, settings.output, settings.repository, settings.framework)
-    logger.info(f"Dependency graph generated: {path}")
+    graphic_path = render_graphic(modules, settings.output, settings.repository, settings.framework)
+    logger.info(f"Dependency graph generated: {graphic_path}")
 
     logger.info("Generating report ...")
-    path = generate_report(settings.template, settings.output, settings.repository, settings.framework, modules)
-    logger.info(f"Report generated: {path}")
+    report_path = generate_report(settings.template, settings.output, settings.repository, settings.framework, modules)
+    logger.info(f"Report generated: {report_path}")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

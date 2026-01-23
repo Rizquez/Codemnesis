@@ -11,8 +11,6 @@ from typing import Optional, List
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['fix_bullets', 'fix_asterisk']
-
 def fix_bullets(txt: Optional[str]) -> Optional[str]:
     """
     Normalizes bullets in multiline text.

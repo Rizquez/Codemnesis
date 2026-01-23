@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 from argparse import ArgumentParser
@@ -16,8 +17,6 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['Arguments']
-
 class Arguments:
     """
     Class responsible for managing and validating arguments received by the console.
@@ -30,7 +29,7 @@ class Arguments:
     """
 
     @classmethod
-    def get(cls) -> 'Namespace':
+    def get(cls) -> Namespace:
         """
         Defines, processes, and validates console arguments for algorithm execution.
 
@@ -72,7 +71,7 @@ class Arguments:
         return args
 
     @staticmethod
-    def __validate(args: 'Namespace', parser: ArgumentParser) -> None:
+    def __validate(args: Namespace, parser: ArgumentParser) -> None:
         """
         Performs validations on arguments received from the console.
 

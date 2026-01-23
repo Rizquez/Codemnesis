@@ -1,6 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-import time, psutil, logging
+import time, psutil, logging, os
 # ---------------------------------------------------------------------------------------------------------------------
 
 # MODULES (INTERNAL)
@@ -8,7 +8,7 @@ import time, psutil, logging
 from src.execute import execute
 from common.settings import Settings
 from handlers.arguments import Arguments
-from handlers.logger import HandlersLogger
+from handlers.logger import HandlerLogger
 from common.constants import ALGORITHM, ALGORITHM_VERSION
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -16,31 +16,27 @@ from common.constants import ALGORITHM, ALGORITHM_VERSION
 # ---------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-
     start = time.time()
-
     before = psutil.virtual_memory().used
 
     settings = Settings(Arguments.get())
 
-    HandlersLogger.set(settings.output)
+    os.makedirs(settings.output, exist_ok=True)
+
+    HandlerLogger.set(settings.output)
 
     logger = logging.getLogger(ALGORITHM)
-
     logger.info("Execution summary")
     logger.info(f"Algorithm version: {ALGORITHM_VERSION}")
 
     execute(settings)
 
     end = time.time()
-
     after = psutil.virtual_memory().used
 
     logger.info(f"Total execution time: {round(end - start, 3)} seconds")
-    
     logger.info(f"Total memory consumed: {round((after - before) / pow(1024, 2), 2)} megabytes")
-
-    HandlersLogger.close(logger)
+    HandlerLogger.close(logger)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

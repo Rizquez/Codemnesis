@@ -108,7 +108,7 @@ def analyze_python(path: Path) -> ModuleInfo:
                             )
                         )
                 else:
-                    pass
+                    pass # Ignored: nested classes, statements, control flow, etc
 
             classes.append(cls)
         else:
@@ -174,95 +174,17 @@ def _normalize_document(doc: Optional[str]) -> Optional[str]:
     txt = inspect.cleandoc(doc)
     lines = txt.splitlines()
 
-    out: List[str] = []
     idx = 0
-    n_lines = len(lines)
+    out: List[str] = []
+    num_lines = len(lines)
 
     headers_map = {
-        **{s: '*Args:*'    for s in SECTIONS},
-        **{s: '*Returns:*' for s in RETURNS},
-        **{s: '*Raises:*'  for s in RAISES},
+        **{item: '*Args:*'    for item in SECTIONS},
+        **{item: '*Returns:*' for item in RETURNS},
+        **{item: '*Raises:*'  for item in RAISES},
     }
 
-    def _format_block_text(start: int) -> Tuple[int, List[str]]:
-        """
-        Processes an indented block belonging to a section (Args, Returns, Raises).
-
-        This internal function analyzes all lines belonging to a section block, 
-        detecting parameter or element names and their descriptions.
-
-        **Features:**
-            - Identifies lines with the pattern `name: description`.
-            - Concatenates multiline descriptions while maintaining context.
-            - Ignores leading blank lines.
-            - Respects indentation to determine when the section ends.
-            - Returns the updated index and a list of all formatted items.
-
-        Args:
-            start(int):
-                Start index from which to begin processing the indented block.
-
-        Returns:
-            (int, List[str]):
-                - New index after the analyzed block.
-                - List of elements formatted as `- name: description`.
-        """
-        items: List[str] = []
-        idx_local = start
-
-        while idx_local < n_lines and (
-            lines[idx_local].startswith('    ')
-            or lines[idx_local].startswith('\t')
-            or not lines[idx_local].strip()
-        ):
-            cursor = lines[idx_local]
-
-            # Skip blank lines without cutting the block
-            if not cursor.strip():
-                idx_local += 1
-                continue
-            
-            # Current indentation level
-            indent = len(cursor) - len(cursor.lstrip())
-
-            # It attempts to detect the pattern → name: description
-            match_cursor = re.match(r'\s*([^:]+):\s*(.*)', cursor)
-
-            if match_cursor:
-                name = match_cursor.group(1).strip()
-                desc = match_cursor.group(2).strip()
-
-                # The following most indented lines are sought to concatenate them as a multiline description
-                jdx = idx_local + 1
-                extra: List[str] = []
-                while jdx < n_lines:
-                    nxt = lines[jdx]
-
-                    if not nxt.strip():
-                        jdx += 1
-                        continue
-
-                    nxt_indent = len(nxt) - len(nxt.lstrip())
-                    if nxt_indent <= indent:
-                        break
-
-                    extra.append(nxt.strip())
-                    jdx += 1
-
-                if extra:
-                    desc = (desc + ' ' + ' '.join(extra)).strip()
-
-                # Initial hyphens are removed to avoid duplicate bullets
-                items.append(f"- {name}: {desc.replace('- ', '')}")
-                idx_local = jdx
-            else:
-                # Line without pattern → name: value, treated as a generic list element
-                items.append(f"- {cursor.strip().replace('- ', '')}")
-                idx_local += 1
-
-        return idx_local, items
-
-    while idx < n_lines:
+    while idx < num_lines:
         line = lines[idx]
         stripped = line.strip()
 
@@ -270,7 +192,7 @@ def _normalize_document(doc: Optional[str]) -> Optional[str]:
             out.append(headers_map[stripped])
             idx += 1
 
-            idx, items = _format_block_text(idx)
+            idx, items = _format_block_text(idx, num_lines, lines)
             out.extend(items)
             out.append('') # Blank line to separate sections
 
@@ -285,6 +207,88 @@ def _normalize_document(doc: Optional[str]) -> Optional[str]:
 
     return '\n'.join(out)
 
+def _format_block_text(idx: int, num_lines: int, lines: List[str]) -> Tuple[int, List[str]]:
+    """
+    Processes an indented block belonging to a section (Args, Returns, Raises).
+
+    This internal function analyzes all lines belonging to a section block, 
+    detecting parameter or element names and their descriptions.
+
+    **Features:**
+        - Identifies lines with the pattern `name: description`.
+        - Concatenates multiline descriptions while maintaining context.
+        - Ignores leading blank lines.
+        - Respects indentation to determine when the section ends.
+        - Returns the updated index and a list of all formatted items.
+
+    Args:
+        idx (int):
+            Start index from which to begin processing the indented block.
+        num_lines (int):
+            Total number of lines in the processed docstring.
+        lines (List[str]):
+            List of individual lines obtained from the normalized docstring.
+
+    Returns:
+        (int, List[str]):
+            - New index after the analyzed block.
+            - List of elements formatted as `- name: description`.
+    """
+    items: List[str] = []
+    idx_local = idx
+
+    while idx_local < num_lines and (
+        lines[idx_local].startswith('    ')
+        or lines[idx_local].startswith('\t')
+        or not lines[idx_local].strip()
+    ):
+        cursor = lines[idx_local]
+
+        # Skip blank lines without cutting the block
+        if not cursor.strip():
+            idx_local += 1
+            continue
+        
+        # Current indentation level
+        indent = len(cursor) - len(cursor.lstrip())
+
+        # It attempts to detect the pattern → name: description
+        match_cursor = re.match(r'\s*([^:]+):\s*(.*)', cursor)
+
+        if match_cursor:
+            name = match_cursor.group(1).strip()
+            desc = match_cursor.group(2).strip()
+
+            # The following most indented lines are sought to concatenate them as a multiline description
+            jdx = idx_local + 1
+            extra: List[str] = []
+            while jdx < num_lines:
+                nxt = lines[jdx]
+
+                if not nxt.strip():
+                    jdx += 1
+                    continue
+
+                nxt_indent = len(nxt) - len(nxt.lstrip())
+                if nxt_indent <= indent:
+                    break
+
+                extra.append(nxt.strip())
+                jdx += 1
+
+            if extra:
+                desc = (desc + ' ' + ' '.join(extra)).strip()
+
+            # Initial hyphens are removed to avoid duplicate bullets
+            items.append(f"- {name}: {desc.replace('- ', '')}")
+            idx_local = jdx
+        else:
+            # Line without pattern → name: value, treated as a generic list element
+            items.append(f"- {cursor.strip().replace('- ', '')}")
+            idx_local += 1
+
+    return idx_local, items
+
 def _collect_decorators(node: ast.AST, src: str) -> List[str]:
     """
     Extracts the decorators applied to a function or class in Python code.
@@ -298,7 +302,6 @@ def _collect_decorators(node: ast.AST, src: str) -> List[str]:
             Node of the syntax tree that may contain decorators.
         src (str):
             Full content of the source file where the node is located.
-            Used to extract exact segments of the original text.
 
     Returns:
         List:
@@ -307,14 +310,14 @@ def _collect_decorators(node: ast.AST, src: str) -> List[str]:
     """
     decorators: List[str] = []
 
-    for deco in getattr(node, 'decorator_list', []):
-        text = ast.get_source_segment(src, deco) # Attempts to retrieve the exact text from the source code
+    for decorator in getattr(node, 'decorator_list', []):
+        text = ast.get_source_segment(src, decorator) # Attempts to retrieve the exact text from the source code
 
         if text is None:
             try:
-                text = ast.unparse(deco) # If it fails, `ast.unparse` is used as an approximation
+                text = ast.unparse(decorator) # If it fails, `ast.unparse` is used as an approximation
             except Exception:
-                text = repr(deco) # And if that also fails, it reverts to a generic repr
+                text = repr(decorator) # And if that also fails, it reverts to a generic repr
 
         decorators.append(text.lstrip('@').strip())
 
@@ -347,7 +350,7 @@ def _collect_imports(tree: ast.AST) -> List[str]:
                 else:
                     imports.append(alias.name) # Relative imports without explicit module
         else:
-            pass
+            pass # Ignored: AST nodes that do not represent imports
 
     return sorted(set(imports))
 

@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,9 +15,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['error_trace']
-
-def error_trace(tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Exception) -> None:
+def error_trace(tb: List[Tuple[str, int, str, str]], logger: Logger, error: Exception) -> None:
     """
     It records an error in the logger with filtered trace information.
 
@@ -42,7 +41,7 @@ def error_trace(tb: List[Tuple[str, int, str, str]], logger: 'Logger', error: Ex
     ]
 
     if not filtered:
-        logger.error(f"{error} - No relevant traceback found")
+        logger.error(f"{error} - No relevant internal traces were found")
         return
     
     # The last call in the traceback of the project itself usually 

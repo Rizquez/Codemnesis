@@ -1,5 +1,6 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+from __future__ import annotations
 import os, logging
 from typing import TYPE_CHECKING
 from logging.handlers import RotatingFileHandler
@@ -16,11 +17,9 @@ from common.constants import ALGORITHM
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-__all__ = ['HandlersLogger']
-
 FILE = 'Trace-Report.log'
 
-class HandlersLogger:
+class HandlerLogger:
     """
     Class responsible for managing the configuration of the logger used in the application.
 
@@ -36,18 +35,11 @@ class HandlersLogger:
         """
         Configures the logger associated with the **Algorithm** layer.
 
-        **Notes:**
-            - This method *creates the output directory* that will contain all generated files.
-
         Args:
             output (str):
                 Path of the directory where the file will be stored. If it does not exist, 
                 it is created automatically.
         """
-        os.makedirs(output, exist_ok=True)
-
-        file = os.path.join(output, FILE)
-
         logger = logging.getLogger(ALGORITHM)
         if logger.handlers: 
             return
@@ -57,12 +49,12 @@ class HandlersLogger:
         # Prevents messages from being sent to the root logger 
         # so that they are not duplicated in other handlers
         logger.propagate = False
-
-        logger.addHandler(cls.__handler(file))
+        
+        logger.addHandler(cls.__handler(file=os.path.join(output, FILE)))
         logger.addHandler(cls.__stream_handler())
         
     @staticmethod
-    def close(logger: 'Logger') -> None:
+    def close(logger: Logger) -> None:
         """
         Closes and removes all handlers associated with a specific logger.
 
