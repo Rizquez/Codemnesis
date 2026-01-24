@@ -39,10 +39,13 @@ Technical documentation often lags behind the pace of development, creating thre
 - **Graph** associated with the map of import dependencies between modules.
 - **Report** with relevant information on common indicators and interpreted metrics.
 
-> [!IMPORTANT]
+> [!NOTE]
 > Supported programming languages: Python and C#.
 
-## 💽 Installation (Windows)
+> [!IMPORTANT]
+> Although Codemnesis is compatible with Windows, Linux, and macOS, the cloning, installation, and execution instructions in this document are focused on Windows. For other operating systems, links to the official documentation for the tools used are included.
+
+## 💽 Installation
 
 Clone this repository (ssh):
 ```sh
@@ -87,7 +90,7 @@ If Graphviz is not installed or is not accessible from the PATH, graph generatio
 ExecutableNotFound: failed to execute 'dot'
 ```
 
-### Installing Graphviz on Windows
+### Installing Graphviz
 
 1. Download the official installer from their [website](https://graphviz.org/download/).
 2. Run the installer and make sure to check the option: *Add Graphviz to the system PATH*.
