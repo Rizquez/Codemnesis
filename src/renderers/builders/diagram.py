@@ -1,6 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from __future__ import annotations
+
 from pathlib import Path
 from graphviz import Digraph
 from typing import List, Dict, Set

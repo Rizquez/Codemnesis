@@ -1,9 +1,11 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from __future__ import annotations
-import os, logging
-from typing import TYPE_CHECKING
+
+import os
+import logging
 from logging.handlers import RotatingFileHandler
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger

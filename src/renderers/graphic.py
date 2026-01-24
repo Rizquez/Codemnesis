@@ -1,6 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from __future__ import annotations
+
 from pathlib import Path
 from typing import List, Dict, Set, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
@@ -57,5 +58,6 @@ def render_graphic(
     graph = dependency_diagram(repository, dep_map, format)
     graph.render(out.with_suffix(''), cleanup=True)
     return out
+
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

@@ -1,12 +1,14 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from __future__ import annotations
+
 import os
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, TYPE_CHECKING
-from reportlab.lib.pagesizes import A4
+
 from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, ListFlowable, ListItem
 # ---------------------------------------------------------------------------------------------------------------------

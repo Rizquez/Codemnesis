@@ -1,6 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
-import logging, re
+import re
+import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import List, Optional

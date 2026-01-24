@@ -1,7 +1,10 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
 from __future__ import annotations
-import sys, traceback, logging
+
+import sys
+import logging
+import traceback
 from typing import List, TYPE_CHECKING
 # ---------------------------------------------------------------------------------------------------------------------
 
