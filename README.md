@@ -1,4 +1,4 @@
-# Codemnesis - v.0.14.7
+# Codemnesis - v.0.15.0
 
 ## 🧾 Project description
 
@@ -152,6 +152,7 @@ Codemnesis/
 │   │   ├── entities.py
 │   │   └── metrics.py
 │   ├── tools
+│   │   ├── docs.py
 │   │   ├── docstring.py
 │   │   ├── fixers.py
 │   │   ├── nums.py

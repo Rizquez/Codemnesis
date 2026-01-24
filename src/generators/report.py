@@ -14,6 +14,7 @@ from src.utils.maps import dependencies_map
 from src.tools.nums import percentage, average
 from common.constants import ALGORITHM_VERSION
 from src.utils.metrics import repository_metrics
+from src.tools.docs import bold_core_module_names
 
 if TYPE_CHECKING:
     from src.models import ModuleInfo
@@ -129,6 +130,8 @@ def generate_report(template: str, output: str, repository: str, framework: str,
     docx.render(context)
     path = os.path.join(output, FILE)
     docx.save(path)
+
+    bold_core_module_names(path)
     
     return path
 
@@ -336,12 +339,11 @@ def _complexity_notes(sloc: int, module_stats: List[Dict[str, Union[str, int]]],
     num_modules = len(module_stats)
     total_methods = sum(int(module['n_methods']) for module in module_stats)
 
-    sloc_average = average(sloc, divider=num_modules) if num_modules else 0
-    methods_average = average(total_methods, divider=num_modules) if num_modules else 0
-
+    sloc_average = average(sloc, divider=num_modules, round_off=True) if num_modules else 0
+    methods_average = average(total_methods, divider=num_modules, round_off=True, decimals=1) if num_modules else 0
     notes.append(
         f'The project contains {num_modules} modules with an average size of '
-        f'{sloc_average} SLOC and about {methods_average:.1f} methods per module.'
+        f'{sloc_average} SLOC and about {methods_average} methods per module.'
     )
 
     # Identify very large modules by absolute size
@@ -574,9 +576,7 @@ def _dependencies(
     )
 
     dependencies_average = average(total_edges, divider=num_modules, round_off=True, decimals=factor)
-    summary_parts.append(
-        f'The average number of dependencies per module is {dependencies_average}.'
-    )
+    summary_parts.append(f'The average number of dependencies per module is {dependencies_average}.')
 
     # Independent modules:
     #   no one imports them (out = 0)
@@ -591,32 +591,32 @@ def _dependencies(
             f'{len(independent)} independent modules (with no incoming or outgoing dependencies) were found.'
         )
     else:
-        summary_parts.append(
-            'No completely independent modules were found.'
-        )
+        summary_parts.append('No completely independent modules were found.')
 
-    # Core modules: more central modules for total connectivity (in + out)
-    centrality = [
-        (
-            module, 
-            in_degree.get(module, 0) + out_degree.get(module, 0), 
-            in_degree.get(module, 0), 
-            out_degree.get(module, 0)
-        )
-        for module in all_modules
-    ]
+    # Core modules (most referenced): highest in-degree (NOT in+out)
+    most_referenced = sorted(
+        all_modules,
+        key=lambda module: in_degree.get(module, 0),
+        reverse=True
+    )[:limit]
 
-    centrality.sort(key=lambda item: (item[1], item[2], item[3]), reverse=True)
+    core_modules = []
+    for module in most_referenced:
+        indeg = in_degree.get(module, 0)
+        if indeg <= 0:
+            continue
 
-    core_modules = [
-        Path(module).resolve().relative_to(Path(repository).resolve()).name
-        for (module, _, _, _) in centrality[:limit] 
-        if (in_degree.get(module, 0) + out_degree.get(module, 0)) > 0
-    ]
+        # % of files referencing this module (approx)
+        # Excluding self-reference potential
+        reference_percetage = percentage(indeg, max(1, num_modules - 1))
+
+        name = Path(module).resolve().relative_to(Path(repository).resolve()).name
+        core_modules.append(f'{name}: referenced by \u007e{reference_percetage}\u0025 of the files in the repository.')
 
     if core_modules:
         summary_parts.append(
-            'The most central modules (with the greatest connectivity) are: ' + ', '.join(core_modules) + '.'
+            f'The repository contains a total of {len(core_modules)} modules that we consider '
+            'to be the most central (with the greatest connectivity).'
         )
     else:
         summary_parts.append(
@@ -629,9 +629,7 @@ def _dependencies(
             'The structure has moderate/high interconnectivity: several modules have quite a few dependencies.'
         )
     else:
-        summary_parts.append(
-            'The structure appears relatively modular: most modules have few dependencies.'
-        )
+        summary_parts.append('The structure appears relatively modular: most modules have few dependencies.')
 
     return {
         'independent_modules': len(independent),
@@ -700,9 +698,7 @@ def _risks(
             'Low documentation coverage: increases the risk of difficult maintenance and errors when modifying the code.'
         )
     elif doc_average < 55:
-        risks.append(
-            'Moderate documentation coverage: some parts may be difficult to understand without context.'
-        )
+        risks.append('Moderate documentation coverage: some parts may be difficult to understand without context.')
     else:
         pass # If the average coverage is >= 55%, it is not considered a risk
     
@@ -717,16 +713,12 @@ def _risks(
 
         top_percentage = percentage(top_sloc, sloc)
         if top_percentage >= 60:
-            risks.append(
-                f'High concentration of logic: {top_percentage}\u0025 of SLOC is in {top_count} modules.'
-            )
+            risks.append(f'High concentration of logic: {top_percentage}\u0025 of SLOC is in {top_count} modules.')
 
     # Risk 3: very large modules
     large = [module for module in module_stats if int(module.get('sloc', 0)) >= 1500]
     if large:
-        risks.append(
-            f'There are very large modules (\u2265 1500 SLOC) that may require refactoring.'
-        )
+        risks.append(f'There are very large modules (\u2265 1500 SLOC) that may require refactoring.')
 
     # Risk 4: Too many methods in one module
     heavy_methods = [module for module in module_stats if int(module.get('n_methods', 0)) >= 40]
@@ -738,9 +730,7 @@ def _risks(
 
     # Risk 5: Hotspots detected
     if hotspots:
-        risks.append(
-            f'Hotspots (modules critical due to size/complexity/documentation) were detected.'
-        )
+        risks.append(f'Hotspots (modules critical due to size/complexity/documentation) were detected.')
 
     # Risk 6: Central dependency
     if dependencies and isinstance(dependencies.get('core_modules', None), list):
@@ -885,9 +875,7 @@ def _risk_impact(
                 'Dependencies are moderate; the learning curve depends on how the domains are separated.'
             )
         else:
-            onboarding.append(
-                'Dependencies are low, which favors understanding by isolated modules.'
-            )
+            onboarding.append('Dependencies are low, which favors understanding by isolated modules.')
     
     # Evolution (future changes)
     evolution = []
@@ -919,11 +907,11 @@ def _risk_impact(
             'No notable hotspots are observed, suggesting potentially more stable evolution by area.'
         )
 
-    if dependencies_average < 40:
+    if doc_average < 40:
         evolution.append(
             'Improving documentation will accelerate future evolutions and reduce risk when introducing changes.'
         )
-    elif dependencies_average < 60:
+    elif doc_average < 60:
         evolution.append(
             'Strengthening documentation in critical modules will reduce the cost of evolution in the medium term.'
         )
@@ -1059,10 +1047,8 @@ def _recommendations(
     cores = dependencies.get('core_modules', []) if isinstance(dependencies, dict) else []
     cores = cores if isinstance(cores, list) else []
     if cores:
-        core_names = ', '.join(str(core) for core in cores[:limit])
         recommendations['architecture'].append(
-            'Clearly define responsibilities and contracts in core '
-            f'modules to minimize cascading impact. ({core_names}).'
+            'Clearly define responsibilities and contracts in core modules to minimize cascading impact.'
         )
 
     dependencies_average = float(dependencies.get('avg_dependencies', 0) or 0) if isinstance(dependencies, dict) else 0
