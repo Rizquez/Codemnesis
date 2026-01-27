@@ -305,7 +305,7 @@ def documentation_coverage(
         'attribute_percent': f'{attribute_percent}\u0025.'
     }
 
-def best_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 5) -> List[str]:
+def best_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 5) -> List[Dict]:
     """
     Select the modules with the best documentation coverage.
 
@@ -337,7 +337,7 @@ def best_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, l
         candidates.append({
             'name': f'{stats["name"]}:',
             'text':f'{doc_percentage}\u0025 of this module is documented.',
-            'percent': doc_percentage,
+            'percent': doc_percentage
         })
 
     return sorted(
@@ -346,7 +346,7 @@ def best_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, l
         reverse=True
     )[:limit]
 
-def worst_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 5) -> List[str]:
+def worst_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, limit: int = 5) -> List[Dict]:
     """
     Select the modules with the worst documentation coverage.
 
@@ -378,7 +378,7 @@ def worst_documented_modules(module_stats: List[Dict[str, Union[str, int]]], *, 
         candidates.append({
             'name': f'{stats["name"]}:',
             'text':f'{doc_percentage}\u0025 of this module is documented.',
-            'percent': doc_percentage,
+            'percent': doc_percentage
         })
 
     return sorted(
