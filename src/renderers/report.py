@@ -2,7 +2,6 @@
 # ---------------------------------------------------------------------------------------------------------------------
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from datetime import datetime
 from typing import List, TYPE_CHECKING
@@ -30,7 +29,7 @@ __all__ = ['render_report']
 
 PDF_FILE = 'Report.pdf'
 
-def render_report(modules: List[ModuleInfo], output: str, repository: str, framework: str) -> str:
+def render_report(modules: List[ModuleInfo], output: str, repository: str, framework: str) -> Path:
     """
     Generates a PDF report of technical analysis for a repository.
 
@@ -43,17 +42,17 @@ def render_report(modules: List[ModuleInfo], output: str, repository: str, frame
         modules (List[ModuleInfo]):
             List of `ModuleInfo` objects representing the analyzed modules in the repository.
         output (str):
-            Path of the directory where the file will be stored. If it does not exist, it is created automatically.
+            Path of the directory where the file will be stored.
         repository (str):
             Base path of the repository or project to be analyzed.
         framework (str):
             Name of the framework used, which must have a compatible mapping method.
 
     Returns:
-        str:
+        Path:
             Absolute path to the generated PDF file.
     """
-    path = os.path.join(output, PDF_FILE)
+    out = Path(output) / PDF_FILE
     repository_name = Path(repository).resolve().name
 
     statistics = repository_metrics(modules, repository)
@@ -68,7 +67,7 @@ def render_report(modules: List[ModuleInfo], output: str, repository: str, frame
     dep_map = dependencies_map(modules, repository, framework)
     dependencies = internal_dependencies(dep_map, repository)
 
-    doc = Document(path)
+    doc = Document(str(out))
     doc.front_page(
         repository_name,
         datetime.now().strftime('%A, %B %d, %Y')
@@ -122,7 +121,7 @@ def render_report(modules: List[ModuleInfo], output: str, repository: str, frame
     )
 
     doc.build()
-    return path
+    return out
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

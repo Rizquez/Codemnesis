@@ -28,7 +28,7 @@ def render_graphic(
     repository: str, 
     framework: str, 
     *, 
-    format: str = 'svg'
+    file_format: str = 'svg'
 ) -> Path:
     """
     Generates the dependency graph found between the analyzed modules.
@@ -41,21 +41,21 @@ def render_graphic(
         modules (List[ModuleInfo]):
             List of `ModuleInfo` objects representing the analyzed modules in the repository.
         output (str):
-            Path of the directory where the file will be stored. If it does not exist, it is created automatically.
+            Path of the directory where the file will be stored.
         repository (str):
             Base path of the repository or project to be analyzed.
         framework (str):
             Name of the framework used, which must have a compatible mapping method.
-        format (str, optional):
+        file_format (str, optional):
             Final format of the graph file.
     
     Returns:
         Path:
             Absolute path of the generated output file.
     """
-    out = Path(output) / f'{FILE}.{format}'
-    dep_map: Dict[str, Set] = dependencies_map(modules, repository, framework)
-    graph = dependency_diagram(repository, dep_map, format)
+    out = Path(output) / f'{FILE}.{file_format}'
+    dep_map = dependencies_map(modules, repository, framework)
+    graph = dependency_diagram(repository, dep_map, file_format)
     graph.render(out.with_suffix(''), cleanup=True)
     return out
 

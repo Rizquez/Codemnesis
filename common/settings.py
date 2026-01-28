@@ -88,10 +88,13 @@ class Settings:
             Set:
                 Updated set of exclusions.
         """
-        if excluded:
-            return EXCLUDED.update(set(excluded.split(',')))
+        files_excluded = EXCLUDED.copy()
 
-        return EXCLUDED
+        if excluded:
+            files = {file.strip() for file in excluded.split(',') if file.strip()}
+            files_excluded.update(files)
+
+        return files_excluded
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

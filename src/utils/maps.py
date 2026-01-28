@@ -144,6 +144,12 @@ def _physical_paths(modules: List[ModuleInfo], repository: str, framework: str) 
             relative = Path(module.path).resolve().relative_to(Path(repository).resolve())
             name = relative.with_suffix('').as_posix().replace('/', '.')
             dct.setdefault(name, set()).add(module.path)
+
+            # If the file is a package initializer, also map the package name without .__init__
+            if name.endswith('.__init__'):
+                pkg = name[: -len('.__init__')]
+                if pkg:
+                    dct.setdefault(pkg, set()).add(module.path)
         else:
             raise ValueError(f"Check the execution parameters, the {framework} framework is not currently supported")
         

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-def module_metrics(src: str, classes: List[ClassInfo], funcs: List[FunctionInfo]) -> ModuleMetrics:
+def module_metrics(src: str, classes: List[ClassInfo], funcs: List[FunctionInfo], framework: str) -> ModuleMetrics:
     """
     Calculate basic module metrics from the source content and the previously analyzed structure.
 
@@ -29,14 +29,23 @@ def module_metrics(src: str, classes: List[ClassInfo], funcs: List[FunctionInfo]
             List of classes detected in the module.
         funcs (List[FunctionInfo]):
             List of functions defined at the module level.
+        framework (str):
+            Name of the framework used, which must have a compatible mapping method.
 
     Returns:
         ModuleMetrics:
             Object containing all the metrics calculated for the analyzed file.
     """
+    if framework == 'python':
+        sloc = _sloc_python(src)
+    elif framework == 'csharp':
+        sloc = _sloc_csharp(src)
+    else:
+        sloc = sum(1 for line in src.splitlines() if line.strip()) # Conservative fallback: only ignore empty lines
+
     return ModuleMetrics(
         loc=len(src.splitlines()),
-        sloc=sum(1 for line in src.splitlines() if line.strip() and not line.strip().startswith('#')),
+        sloc=sloc,
         n_classes=len(classes),
         n_functions=len(funcs),
         n_methods=sum(len(cls.methods) for cls in classes)
@@ -92,8 +101,6 @@ def repository_metrics(modules: List[ModuleInfo], repository: str) -> Repository
         loc += metrics.loc or 0
         sloc += metrics.sloc or 0
 
-        module_attributes = 0
-
         module_classes = 0
         module_documented_classes = 0
 
@@ -106,7 +113,6 @@ def repository_metrics(modules: List[ModuleInfo], repository: str) -> Repository
         for cls in module.classes:
             classes += 1
             module_classes += 1
-            module_attributes += len(cls.attributes)
 
             if cls.doc and cls.doc.strip():
                 documented_classes += 1
@@ -157,6 +163,122 @@ def repository_metrics(modules: List[ModuleInfo], repository: str) -> Repository
         method_percent=percentage(documented_methods, methods),
         attribute_percent=percentage(documented_attributes, attributes)
     )
+
+def _sloc_python(src: str) -> int:
+    """
+    Calculate the number of effective lines of code (SLOC) for a Python file.
+
+    **A line is considered SLOC if:**
+        - It is not empty.
+        - It is not a comment (lines beginning with `#`).
+
+    The calculation is based solely on the textual content of the file and does 
+    not perform any kind of syntactic analysis using AST.
+
+    Args:
+        src (str):
+            Full content of the source file.
+
+    Returns:
+        int:
+            Number of lines of code (SLOC) detected.
+    """
+    count = 0
+    for line in src.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        if stripped.startswith('#'):
+            continue
+
+        count += 1
+
+    return count
+
+def _sloc_csharp(src: str) -> int:
+    """
+    Calculate the number of effective lines of code (SLOC) for a C# file.
+
+    **A line is considered SLOC if:**
+        - It is not empty.
+        - It is not a line comment (`//`, `///`).
+        - It does not belong exclusively to a comment block (`/* ... */`).
+
+    The algorithm handles block comments using a state control that allows lines 
+    within `/* ... */` to be correctly ignored, even when the block spans multiple lines.
+
+    **Special behavior:**
+        - If a line contains code before `/*`, that part is counted as SLOC.
+        - If a `/* ... */` block begins and ends on the same line, any code after the closing is also counted.
+        - Lines with code and comments on the same line are counted as SLOC.
+
+    **Limitations:**
+        - No complete lexical analysis of the language is performed.
+        - Comments within string literals are not detected.
+        - The calculation is approximate, but accurate for metrics of structural analysis and documentation.
+
+    Args:
+        src (str):
+            Full content of the source file.
+
+    Returns:
+        int:
+            Number of lines of code (SLOC) detected.
+    """
+    count = 0
+    in_block = False
+
+    for line in src.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        # Inside a block /* ... */
+        if in_block:
+            if '*/' in stripped:
+                
+                # Close the block and continue with whatever may come next
+                after = stripped.split('*/', 1)[1].strip()
+                in_block = False
+
+                if not after:
+                    continue
+
+                stripped = after
+            else:
+                continue
+
+        # Line comments
+        if stripped.startswith('//'):
+            continue
+
+        # Start of block /* ... */
+        if '/*' in stripped:
+            before, after = stripped.split('/*', 1)
+            before = before.strip()
+
+            # If there is anything before /* it counts as SLOC
+            if before:
+                count += 1
+
+            # If the block ends on the same line, something may remain after it
+            if '*/' in after:
+                after2 = after.split('*/', 1)[1].strip()
+
+                if after2:
+                    count += 1
+
+                in_block = False
+            else:
+                in_block = True
+
+            continue
+
+        # Normal line of code
+        count += 1
+
+    return count
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

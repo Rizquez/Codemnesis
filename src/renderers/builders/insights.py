@@ -175,12 +175,13 @@ def hotspots_modules(sloc: int, module_stats: List[Dict[str, Union[str, int]]]) 
             'name': stats['name'],
             'sloc': stats['sloc'],
             'percent': f'{sloc_percentage}\u0025',
+            'num_percent': sloc_percentage,
             'comment': '\n'.join(comment)
         })
 
     return sorted(
         candidates, 
-        key=lambda candidate: (candidate['percent'], candidate['sloc']),
+        key=lambda candidate: (candidate['num_percent'], candidate['sloc']),
         reverse=True
     )
 
@@ -401,7 +402,7 @@ def internal_dependencies(
         - In-degree: number of modules that import each module (incoming dependencies).
         - Independent modules: no incoming or outgoing dependencies.
         - Average dependencies per module (average of outgoing edges).
-        - Core modules: highest total connectivity (in + out), the most central.
+        - Core modules: modules with the highest in-degree (most referenced by other modules).
 
     **Notes:**
         - If `dep_map` is empty, return default values and a summary message.
@@ -461,8 +462,8 @@ def internal_dependencies(
     summary_parts.append(f'The average number of dependencies per module is {dependencies_average}.')
 
     # Independent modules:
-    #   no one imports them (out = 0)
-    #   no one imports them (in = 0)
+    #   These modules do not import other modules (out = 0)
+    #   No one imports these modules (in = 0)
     independent = [
         module for module in all_modules
         if out_degree.get(module, 0) == 0 and in_degree.get(module, 0) == 0
@@ -564,7 +565,7 @@ def technical_risks(
         limit (int, optional):
             Maximum number of modules to be returned.
     
-    Returns
+    Returns:
         List:
             List of phrases describing main risks, truncated to `limit`.
     """

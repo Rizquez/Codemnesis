@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Tuple, TYPE_CHECKING
+from typing import List, NamedTuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger
@@ -17,7 +17,11 @@ from common.constants import PROJECT_ROOT
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-Trace = Tuple[str, int, str, str]
+class Trace(NamedTuple):
+    filename: str
+    line: int
+    function: str
+    text: str
 
 def error_trace(traces: List[Trace], logger: Logger, error: Exception) -> None:
     """
@@ -50,7 +54,8 @@ def error_trace(traces: List[Trace], logger: Logger, error: Exception) -> None:
     # indicates the point where the internal logic actually failed
     filename, line, funcname, text = internal[-1]
 
-    logger.error(f"{error} occurred while processing {text} in function {funcname} (file: {filename}, line: {line})")
+    about = f'while processing {text}' if text else ''
+    logger.error(f"{error} occurred {about} in function {funcname} (file: {filename}, line: {line})")
 
 def _normalize(path: str) -> str:
     """

@@ -72,7 +72,7 @@ logger = logging.getLogger(ALGORITHM)
 Instance of the logger used by the analysis module.
 """
 
-def analyze_csharp(path: Path) -> ModuleInfo:
+def analyze_csharp(path: Path, framework: str) -> ModuleInfo:
     """
     Analyzes a C# file, obtaining structural information: classes, methods, attributes, 
     XML documentation, and metrics.
@@ -92,6 +92,8 @@ def analyze_csharp(path: Path) -> ModuleInfo:
     Args:
         path (Path):
             Path of the C# file to be analyzed.
+        framework (str):
+            Name of the framework used, which must have a compatible mapping method.
 
     Returns:
         ModuleInfo:
@@ -172,7 +174,7 @@ def analyze_csharp(path: Path) -> ModuleInfo:
         functions=[],       # C# does not have typical top-level functions
         classes=classes,
         imports=_collect_imports(src),
-        metrics=module_metrics(src, classes, [])
+        metrics=module_metrics(src, classes, [], framework)
     )
 
 # TODO:
@@ -416,20 +418,25 @@ def _xml_node_to_text(node: ET.Element) -> str:
 
 def _collect_decorators(lines: List[str], start_idx: int) -> List[str]:
     """
-    Extracts C#-style decorators (attributes) applied to a class, method, constructor or field.
+    Extracts C#-style decorators (attributes) applied to a class, method, constructor, or field.
 
-    The algorithm ascends from `start_idx`, collecting all immediately preceding documentation,
-    sorting it, and then parsing it as valid XML.
+    The function ascends from the line immediately preceding `start_idx`, collecting all contiguous 
+    attribute declarations written in C# attribute syntax `[Attribute(...)]`.
+
+    **During the upward scan:**
+        - Attribute lines enclosed in brackets `[...]` are collected.
+        - XML documentation lines starting with `///` are skipped.
+        - The scan stops when a non-related line is found.
 
     Args:
         lines (List[str]):
             The file content split into lines.
         start_idx (int):
-            The 1-based index of the declaration line.
+            Zero-based index of the declaration line; the search starts from the line above it.
 
     Returns:
         List:
-            List with all decorators found.
+            Ordered list of decorators found, preserving their original order.
     """
     attrs: List[str] = []
     idx = start_idx - 1

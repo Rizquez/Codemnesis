@@ -1,5 +1,7 @@
 # MODULES (EXTERNAL)
 # ---------------------------------------------------------------------------------------------------------------------
+import re
+from functools import lru_cache
 from typing import List, Optional
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -11,7 +13,7 @@ from typing import List, Optional
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-def format_docstring(doc: str, *, cleaned: Optional[List[str]]) -> str:
+def format_docstring(doc: str, cleaned: List[str]) -> str:
     """
     Applies the full format to the received text (docstring) by cleanup steps.
 
@@ -21,7 +23,7 @@ def format_docstring(doc: str, *, cleaned: Optional[List[str]]) -> str:
     Args:
         doc (str):
             Original text of the docstring to be formatted.
-        cleaned (List[str], optional): 
+        cleaned (List[str]): 
             List of tokens to be removed using replace.
 
     Returns:
@@ -54,16 +56,9 @@ def _clean(doc: str, cleaned: List[str]) -> str:
         str:
             Text without special characters or formatting symbols.
     """
-    lines = doc.strip().splitlines()
-    
-    out: List[str] = []
-    for line in lines:
-        for item in cleaned:
-            line = line.replace(item, '')
-        
-        out.append(line)
-    
-    return '\n'.join(out)
+    text = doc.strip()
+    pattern = re.compile('|'.join(re.escape(token) for token in cleaned))
+    return pattern.sub('', text)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

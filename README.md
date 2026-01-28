@@ -1,4 +1,4 @@
-# Codemnesis - v.0.18.0
+# Codemnesis - v.0.18.1
 
 ## 🧾 Project description
 

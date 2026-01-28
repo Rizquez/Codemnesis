@@ -39,8 +39,7 @@ class HandlerLogger:
 
         Args:
             output (str):
-                Path of the directory where the file will be stored. If it does not exist, 
-                it is created automatically.
+                Path of the directory where the file will be stored.
         """
         logger = logging.getLogger(ALGORITHM)
         if logger.handlers: 

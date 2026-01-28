@@ -153,7 +153,7 @@ class Document:
 
     def __add_vignettes(
         self, 
-        items: List[str], 
+        items: List[Union[str, Dict[str, object]]], 
         *, 
         simple: bool = True, 
         first_key: Optional[str] = None, 
@@ -163,7 +163,7 @@ class Document:
         Adds a bulleted list to the document history.
 
         Args:
-            items (List[str]): 
+            items (List[Union[str, Dict[str, object]]]): 
                 Items to include as bullets (strings or dictionaries).
             simple (bool, optional): 
                 If `True`, use the item as is. If `False`, compose the text with keys.
@@ -171,11 +171,32 @@ class Document:
                 Key of the first text fragment (required if `simple=False`).
             second_key (str, optional):
                 Key of the second text fragment (required if `simple=False`).
+        
+        Raises:
+            ValueError:
+                If `simple=False` and the parameters `first_key` and/or `second_key` are not provided,
+                which are necessary to compose the text of each bullet point.
+            TypeError:
+                If `simple=False` and any of the elements in `items` is not a dictionary.
+            KeyError:
+                If `simple=False` and any dictionary in `items` does not contain the keys specified in 
+                `first_key` and `second_key`.
         """
         if simple:
             elements = [ListItem(Paragraph(item, vignette)) for item in items]
         else:
-            elements = [ListItem(Paragraph(f'{item[first_key]} {item[second_key]}', vignette)) for item in items]
+            if not first_key or not second_key:
+                raise ValueError('If simple=False, first_key and second_key must be provided to compose the text')
+
+            elements = []
+            for item in items:
+                if not isinstance(item, dict):
+                    raise TypeError('If simple=False, all elements of items must be dictionaries')
+
+                if first_key not in item or second_key not in item:
+                    raise KeyError(f'Required keys are missing from an item, expected: {first_key} and {second_key}')
+
+                elements.append(ListItem(Paragraph(f'{item[first_key]} {item[second_key]}', vignette)))
 
         self.__story.append(ListFlowable(
             elements,
@@ -317,10 +338,10 @@ class Document:
         self.__story.append(Paragraph(f'Attributes documented: {doc_coverage["attribute_percent"]}', paragraph))
 
         self.__story.append(Paragraph('Modules with the best documentation', title2))
-        self.__story.append(self.__add_vignettes(best_modules, simple=False, first_key='name', second_key='text'))
+        self.__add_vignettes(best_modules, simple=False, first_key='name', second_key='text')
 
         self.__story.append(Paragraph('Modules with the least documentation', title2))
-        self.__story.append(self.__add_vignettes(worst_modules, simple=False, first_key='name', second_key='text'))
+        self.__add_vignettes(worst_modules, simple=False, first_key='name', second_key='text')
 
         self.__story.append(PageBreak())
 
@@ -339,10 +360,10 @@ class Document:
         self.__story.append(Paragraph(f'Average dependencies per module: {dependencies["avg_dependencies"]}', paragraph))
 
         self.__story.append(Paragraph('Core modules (most referenced)', title2))
-        self.__story.append(self.__add_vignettes(dependencies['core_modules']))
+        self.__add_vignettes(dependencies['core_modules'])
 
         self.__story.append(Paragraph('Comments on the dependencies diagram', title2))
-        self.__story.append(self.__add_vignettes(dependencies['summary']))
+        self.__add_vignettes(dependencies['summary'])
 
         self.__story.append(PageBreak())
 
@@ -359,18 +380,18 @@ class Document:
         self.__story.append(Paragraph('Risks and technical debt', title1))
 
         self.__story.append(Paragraph('Identified risks', title2))
-        self.__story.append(self.__add_vignettes(technical_risks))
+        self.__add_vignettes(technical_risks)
 
         self.__story.append(Paragraph('Potential impact', title2))
 
         self.__story.append(Paragraph('Maintainability', title3))
-        self.__story.append(self.__add_vignettes(risk_impact['maintainability']))
+        self.__add_vignettes(risk_impact['maintainability'])
 
         self.__story.append(Paragraph('Onboarding', title3))
-        self.__story.append(self.__add_vignettes(risk_impact['onboarding']))
+        self.__add_vignettes(risk_impact['onboarding'])
 
         self.__story.append(Paragraph('Future evolution', title3))
-        self.__story.append(self.__add_vignettes(risk_impact['evolution']))
+        self.__add_vignettes(risk_impact['evolution'])
 
         self.__story.append(PageBreak())
 
@@ -385,13 +406,13 @@ class Document:
         self.__story.append(Paragraph('Recommendations', title1))
 
         self.__story.append(Paragraph('Refactoring and structure', title2))
-        self.__story.append(self.__add_vignettes(recommendation['refactor']))
+        self.__add_vignettes(recommendation['refactor'])
 
         self.__story.append(Paragraph('Documentation', title2))
-        self.__story.append(self.__add_vignettes(recommendation['docs']))
+        self.__add_vignettes(recommendation['docs'])
 
         self.__story.append(Paragraph('IdentifiArchitectureed', title2))
-        self.__story.append(self.__add_vignettes(recommendation['architecture']))
+        self.__add_vignettes(recommendation['architecture'])
 
     @staticmethod
     def __modules_table(modules_overview: List[Dict[str, object]]) -> Table:

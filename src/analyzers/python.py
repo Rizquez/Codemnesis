@@ -31,7 +31,18 @@ RETURNS = ('Returns:', 'Return:')
 SECTIONS = ('Args:', 'Arguments:', 'Parameters:')
 RAISES = ('Raises:', 'Raise:', 'Exceptions:', 'Exception:')
 
-def analyze_python(path: Path) -> ModuleInfo:
+# AST nodes that are commonly expected at module level and should not be considered "unexpected"
+EXPECTED_TOP_LEVEL_NODES = (
+    ast.Import,
+    ast.ImportFrom,
+    ast.Assign,
+    ast.AnnAssign,
+    ast.If,     # e.g. if __name__ == "__main__"
+    ast.Expr,   # Module docstring or standalone expressions
+    ast.Pass
+)
+
+def analyze_python(path: Path, framework: str) -> ModuleInfo:
     """
     Analyzes a Python file and extracts structural information about its modules, classes, and functions.
 
@@ -51,6 +62,8 @@ def analyze_python(path: Path) -> ModuleInfo:
     Args:
         path (Path):
             Path of the Python file to be analyzed.
+        framework (str):
+            Name of the framework used, which must have a compatible mapping method.
 
     Returns:
         ModuleInfo:
@@ -65,7 +78,7 @@ def analyze_python(path: Path) -> ModuleInfo:
     classes: List[ClassInfo] = []
 
     for node in tree.body:
-        if isinstance(node, ast.FunctionDef): # Higher-level functions
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)): # Higher-level functions (sync + async)
             funcs.append(
                 FunctionInfo(
                     name=node.name,
@@ -83,7 +96,7 @@ def analyze_python(path: Path) -> ModuleInfo:
             )
 
             for sub in node.body:
-                if isinstance(sub, ast.FunctionDef): # Class methods
+                if isinstance(sub, (ast.FunctionDef, ast.AsyncFunctionDef)): # Class methods (sync + async)
                     cls.methods.append(FunctionInfo(
                         name=sub.name,
                         lineno=sub.lineno,
@@ -115,8 +128,11 @@ def analyze_python(path: Path) -> ModuleInfo:
 
             classes.append(cls)
         else:
-            # For any node that is not FunctionDef or ClassDef, a warning is logged
-            # This helps detect unanticipated structures
+            # Ignore common top-level nodes (imports, assignments, main guards, etc)
+            if isinstance(node, EXPECTED_TOP_LEVEL_NODES):
+                continue
+
+            # For any truly unexpected node, log a warning to help detect unanticipated structures
             node_type = type(node).__name__
             lineno = getattr(node, 'lineno', '?')
 
@@ -134,7 +150,7 @@ def analyze_python(path: Path) -> ModuleInfo:
         functions=funcs,
         classes=classes,
         imports=_collect_imports(tree),
-        metrics=module_metrics(src, classes, funcs)
+        metrics=module_metrics(src, classes, funcs, framework)
     )
 
 def _normalize_document(doc: Optional[str]) -> Optional[str]:

@@ -52,11 +52,10 @@ def execute(settings: Settings) -> None:
     modules: List[ModuleInfo] = []
     for file in files:
         try:
-            modules.append(analyze_method(file))
-        except Exception:
-            _, error, line_error = sys.exc_info()
-            tb = traceback.extract_tb(line_error)
-            error_trace(tb, logger, error)
+            modules.append(analyze_method(file, settings.framework))
+        except Exception as error:
+            traces = traceback.extract_tb(error.__traceback__)
+            error_trace(traces, logger, error)
 
     logger.info(f"Generating README ...")
     readme_path = render_readme(modules, settings.repository, settings.output)

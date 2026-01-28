@@ -87,11 +87,11 @@ class Arguments:
                 If any validation fails, `parser.error` is invoked, which stops execution 
                 and displays the corresponding error message.
         """
-        if not os.path.exists(args.repository):
-            parser.error("The parameter sent in `--repository` must be a valid directory!")
+        if args.output and os.path.exists(args.output) and not os.path.isdir(args.output):
+            parser.error("The parameter sent in `--output` must be a directory!")
 
-        if args.output and not os.path.exists(args.output):
-            parser.error("The parameter sent in `--output` must be a valid directory!")
+        if not os.path.isdir(args.repository):
+            parser.error("The parameter sent in `--repository` must be a valid directory!")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # END OF FILE

@@ -19,10 +19,10 @@ FILE = 'Graphic'
 CLUSTER_BG = '#f5f5f5'
 NODE_FILL = '#ffffff'
 NODE_BORDER = '#aaaaaa'
-EDGE_INTRA = '#444444'
-EDGE_INTER = '#1f77b4'
+EDGE_INTRA = '#1f77b4'
+EDGE_INTER = '#444444'
 
-def dependency_diagram(repository: str, dep_map: Dict[str, Set[str]], format: str) -> Digraph:
+def dependency_diagram(repository: str, dep_map: Dict[str, Set[str]], file_format: str) -> Digraph:
     """
     Construct a repository dependency diagram using Graphviz.
 
@@ -44,7 +44,7 @@ def dependency_diagram(repository: str, dep_map: Dict[str, Set[str]], format: st
         dep_map(Dict[str, Set[str]]): 
             Dictionary where each key is a module and its value is a set of modules on which 
             it depends.
-        format (str): 
+        file_format (str): 
             Output format supported by Graphviz.
 
     Returns:
@@ -55,7 +55,7 @@ def dependency_diagram(repository: str, dep_map: Dict[str, Set[str]], format: st
     subtitle = f'Repository analyzed: {Path(repository).resolve().name}'
     
     dot = Digraph(
-        format=format,
+        format=file_format,
         graph_attr={
             'rankdir': 'LR',
             'splines': 'ortho',
@@ -83,7 +83,7 @@ def dependency_diagram(repository: str, dep_map: Dict[str, Set[str]], format: st
 
     groups: Dict[str, List[str]] = {}
     for path in all_path:
-        name = Path(path).parent.name or 'root'
+        name = Path(path).parent.name or 'root' # TODO: Cluster collision by folder name
         groups.setdefault(name, []).append(path)
 
     # For each folder (group), two subgraphs are created:
@@ -123,7 +123,7 @@ def dependency_diagram(repository: str, dep_map: Dict[str, Set[str]], format: st
             dest_id = id_map[dest]
 
             same_group = (src_name == dest_name)
-            dot.edge(src_id, dest_id, color=EDGE_INTER if same_group else EDGE_INTRA)
+            dot.edge(src_id, dest_id, color=EDGE_INTRA if same_group else EDGE_INTER)
 
     return dot
 

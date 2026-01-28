@@ -29,7 +29,7 @@ class AttributeInfo:
     """
     name: str
     lineno: int
-    doc: Optional[str]
+    doc: Optional[str] = None
 
 @dataclass
 class FunctionInfo:
@@ -48,7 +48,7 @@ class FunctionInfo:
     """
     name: str
     lineno: int
-    doc: Optional[str]
+    doc: Optional[str] = None
     decorators: List[str] = field(default_factory=list)
 
 @dataclass
@@ -72,7 +72,7 @@ class ClassInfo:
     """
     name: str
     lineno: int
-    doc: Optional[str]
+    doc: Optional[str] = None
     methods: List[FunctionInfo] = field(default_factory=list)
     attributes: List[AttributeInfo] = field(default_factory=list)
     decorators: List[str] = field(default_factory=list)
@@ -97,9 +97,9 @@ class ModuleInfo:
             Metrics associated with the module.
     """
     path: str
-    doc: Optional[str]
-    functions: List[FunctionInfo]
-    classes: List[ClassInfo]
+    doc: Optional[str] = None
+    functions: List[FunctionInfo] = field(default_factory=list)
+    classes: List[ClassInfo] = field(default_factory=list)
     imports: List[str] = field(default_factory=list)
     metrics: Optional[ModuleMetrics] = None
 

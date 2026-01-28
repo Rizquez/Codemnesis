@@ -81,7 +81,6 @@ def average(
         raise ValueError('The divisor must be an integer greater than 0')
 
     effective = divider if divider is not None else len(values)
-
     avg = sum(values) / effective
 
     if round_off:
