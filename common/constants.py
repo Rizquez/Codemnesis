@@ -21,7 +21,7 @@ ALGORITHM = 'ALGORITHM'
 Handler for the `.log` file for storing the execution trace.
 """
 
-ALGORITHM_VERSION = '0.18.2'
+ALGORITHM_VERSION = '0.18.3'
 """
 Current version of the algorithm.
 """

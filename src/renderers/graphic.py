@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 __all__ = ['render_graphic']
 
-FILE = 'Graphic'
+FILE = 'Dependency-Diagram'
 
 def render_graphic(
     modules: List[ModuleInfo], 

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 __all__ = ['render_readme']
 
-FILE = 'README.md'
+FILE = 'Documentation.md'
 
 def render_readme(modules: List[ModuleInfo], repository: str, output: str) -> Path:
     """

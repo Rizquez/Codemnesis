@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 __all__ = ['render_report']
 
-PDF_FILE = 'Report.pdf'
+PDF_FILE = 'Analysis-Report.pdf'
 
 def render_report(modules: List[ModuleInfo], output: str, repository: str, framework: str) -> Path:
     """

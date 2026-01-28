@@ -15,8 +15,6 @@ from common.constants import ALGORITHM_VERSION
 # OPERATIONS / CLASS CREATION / GENERAL FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
-FILE = 'Graphic'
-
 CLUSTER_BG = '#f5f5f5'
 NODE_FILL = '#ffffff'
 NODE_BORDER = '#aaaaaa'
