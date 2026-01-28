@@ -177,15 +177,24 @@ def analyze_csharp(path: Path, framework: str) -> ModuleInfo:
         metrics=module_metrics(src, classes, [], framework)
     )
 
-# TODO:
-# It is not a formal C# parser: if there are curly braces `{` or `}` within strings, comments 
-# or multiline literals, the count may be off and return an incorrect block
 def _extract_text_block(src: str, idx_brace: int) -> str:
     """
-    Extracts the block of text delimited by curly brackets `{ ... }` starting from an initial position.
+    Extracts a block of code delimited by curly braces `{ ... }` from a known starting position, 
+    correctly ignoring curly braces that appear within comments or C# literals.
 
-    This block is used to limit searches with regular expressions (methods, attributes, constructors) to 
-    the body of a class/struct/record/interface, avoiding false positives outside its scope.
+    This function is specifically designed for static analysis of C# code without using a formal 
+    parser (Roslyn). It implements a sequential scanner with explicit states that partially simulates 
+    the lexical behavior of the language.
+
+    **The algorithm:**
+        - Starts at the position of the opening `{` character.
+        - Advances character by character, maintaining a curly brace depth counter.
+        - Increments the depth only when it finds `{` outside of any literal or comment.
+        - Decrements the depth only when it finds `}` outside of any literal or comment.
+        - Ends when the depth returns to zero, indicating the correct closure of the block.
+    
+    **Known limitations:**
+        - It is not a complete C# parser.
 
     Args:
         src (str):
@@ -195,27 +204,230 @@ def _extract_text_block(src: str, idx_brace: int) -> str:
 
     Returns:
         str:
-            Substring of the source code representing the block delimited by braces, from `src[idx_brace]` 
-            to just before the matching closing brace.
+            Substring of `src` representing the block delimited by braces, starting at `{` and ending just 
+            before the corresponding closing `}`. If no valid closing brace is found, the text from `idx_brace` 
+            to the end of the file is returned.
     """
-    depth = 0
-    idx_end = len(src)
-    idx_loop = idx_brace
+    source_length = len(src)
+    cursor = idx_brace
+    brace_depth = 0
 
-    while idx_loop < len(src):
-        if src[idx_loop] == '{':
-            depth += 1
-        elif src[idx_loop] == '}':
-            depth -= 1
-            if depth == 0:
-                idx_end = idx_loop
-                break
-        else:
-            pass # Other characters are ignored; only braces affect block depth
-        
-        idx_loop += 1
+    # --- Comment states ---
+    in_single_line_comment = False   # //
+    in_multi_line_comment = False    # /* ... */
 
-    return src[idx_brace:idx_end]
+    # --- Literal states ---
+    in_char_literal = False          # 'a'
+    in_string_literal = False        # "..."
+    in_verbatim_string = False       # @"..."
+    escape_next_char = False         # \ in normal strings
+
+    # --- Raw string state (C# 11+) ---
+    in_raw_string = False
+    raw_string_delimiter_length = 0  # Number of " characters (>= 3)
+
+    while cursor < source_length:
+        current_char = src[cursor]
+        next_char = src[cursor + 1] if cursor + 1 < source_length else ''
+
+        # ==========================================================
+        # 1) Handle comment states
+        # ==========================================================
+        if in_single_line_comment:
+            if current_char == '\n':
+                in_single_line_comment = False
+            cursor += 1
+            continue
+
+        if in_multi_line_comment:
+            if current_char == '*' and next_char == '/':
+                in_multi_line_comment = False
+                cursor += 2
+            else:
+                cursor += 1
+            continue
+
+        # ==========================================================
+        # 2) Handle raw string literals
+        # ==========================================================
+        if in_raw_string:
+            if current_char == '"':
+                lookahead = cursor
+                while lookahead < source_length and src[lookahead] == '"':
+                    lookahead += 1
+
+                quote_run_length = lookahead - cursor
+
+                if quote_run_length >= raw_string_delimiter_length:
+                    in_raw_string = False
+                    cursor += raw_string_delimiter_length
+                    continue
+
+                cursor = lookahead
+                continue
+
+            cursor += 1
+            continue
+
+        # ==========================================================
+        # 3) Handle char literals
+        # ==========================================================
+        if in_char_literal:
+            if escape_next_char:
+                escape_next_char = False
+                cursor += 1
+                continue
+
+            if current_char == '\\':
+                escape_next_char = True
+                cursor += 1
+                continue
+
+            if current_char == "'":
+                in_char_literal = False
+
+            cursor += 1
+            continue
+
+        # ==========================================================
+        # 4) Handle normal / verbatim strings
+        # ==========================================================
+        if in_string_literal:
+            if in_verbatim_string:
+                if current_char == '"' and next_char == '"':
+                    cursor += 2
+                    continue
+
+                if current_char == '"':
+                    in_string_literal = False
+                    in_verbatim_string = False
+                    cursor += 1
+                    continue
+
+                cursor += 1
+                continue
+
+            # Normal string
+            if escape_next_char:
+                escape_next_char = False
+                cursor += 1
+                continue
+
+            if current_char == '\\':
+                escape_next_char = True
+                cursor += 1
+                continue
+
+            if current_char == '"':
+                in_string_literal = False
+                cursor += 1
+                continue
+
+            cursor += 1
+            continue
+
+        # ==========================================================
+        # 5) Detect comment entry
+        # ==========================================================
+        if current_char == '/' and next_char == '/':
+            in_single_line_comment = True
+            cursor += 2
+            continue
+
+        if current_char == '/' and next_char == '*':
+            in_multi_line_comment = True
+            cursor += 2
+            continue
+
+        # ==========================================================
+        # 6) Detect char literal entry
+        # ==========================================================
+        if current_char == "'":
+            in_char_literal = True
+            escape_next_char = False
+            cursor += 1
+            continue
+
+        # ==========================================================
+        # 7) Detect raw string entry
+        # ==========================================================
+        # Case: """..."""
+        if current_char == '"':
+            lookahead = cursor
+            while lookahead < source_length and src[lookahead] == '"':
+                lookahead += 1
+
+            quote_run_length = lookahead - cursor
+
+            if quote_run_length >= 3:
+                in_raw_string = True
+                raw_string_delimiter_length = quote_run_length
+                cursor = lookahead
+                continue
+
+            in_string_literal = True
+            in_verbatim_string = False
+            escape_next_char = False
+            cursor += 1
+            continue
+
+        # Case: $"""...""" / $$"""..."""
+        if current_char == '$':
+            dollar_cursor = cursor
+            while dollar_cursor < source_length and src[dollar_cursor] == '$':
+                dollar_cursor += 1
+
+            if dollar_cursor < source_length and src[dollar_cursor] == '"':
+                quote_cursor = dollar_cursor
+                while quote_cursor < source_length and src[quote_cursor] == '"':
+                    quote_cursor += 1
+
+                quote_run_length = quote_cursor - dollar_cursor
+
+                if quote_run_length >= 3:
+                    in_raw_string = True
+                    raw_string_delimiter_length = quote_run_length
+                    cursor = quote_cursor
+                    continue
+
+            cursor += 1
+            continue
+
+        # ==========================================================
+        # 8) Detect string entry (@"...", $"...", $@"...", @$"...")
+        # ==========================================================
+        if current_char in ('@', '$'):
+            if next_char == '"':
+                in_string_literal = True
+                in_verbatim_string = (current_char == '@')
+                escape_next_char = False
+                cursor += 2
+                continue
+
+            if (
+                cursor + 2 < source_length
+                and src[cursor + 1] in ('@', '$')
+                and src[cursor + 2] == '"'
+            ):
+                in_string_literal = True
+                in_verbatim_string = '@' in (src[cursor], src[cursor + 1])
+                escape_next_char = False
+                cursor += 3
+                continue
+
+        # ==========================================================
+        # 9) Count braces (ONLY here)
+        # ==========================================================
+        if current_char == '{':
+            brace_depth += 1
+        elif current_char == '}':
+            brace_depth -= 1
+            if brace_depth == 0:
+                return src[idx_brace:cursor]
+
+        cursor += 1
+
+    return src[idx_brace:]
 
 def _collect_xml_text(lines: List[str], start_idx: int) -> Optional[str]:
     """
